@@ -22,6 +22,7 @@ export async function POST(request: Request) {
       instagram: parsed.data.instagram.replace(/^@/, ""),
       qr_token
     }).select("id, full_name, gift, qr_token").single();
+    console.error("DEBUG host:", process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host : "SIN URL");
 
     if (error) {
       console.error("Registration insert error:", error.message);
