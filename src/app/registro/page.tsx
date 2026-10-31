@@ -57,6 +57,12 @@ export default function RegistroPage() {
   const selectedGiftIndex = GIFTS.findIndex((gift) => gift.value === form.gift);
   const giftTheme = selectedGiftIndex >= 0 ? `registration-theme-${selectedGiftIndex + 1}` : "registration-theme-default";
 
+  const formComplete =
+    form.full_name.trim().length >= 3 &&
+    form.whatsapp.trim().length >= 7 &&
+    form.instagram.trim().length >= 2 &&
+    form.gift !== "";
+
   if (result) {
     const selectedGiftIndex = GIFTS.findIndex((gift) => gift.value === result.gift);
     const selectedGift = GIFTS[selectedGiftIndex];
@@ -207,11 +213,15 @@ export default function RegistroPage() {
           </fieldset>
 
           {error && <p className="error-message">{error}</p>}
+          
+          {!formComplete && (
+            <p className="privacy-note">Completa los tres datos y elige tu regalo para continuar.</p>
+          )}
 
           <button
             className="button button-gold submit-button"
             type="submit"
-            disabled={loading || !form.gift}
+            disabled={loading || !formComplete}
           >
             {loading ? "Guardando registro..." : "Confirmar registro"}
             <Gift size={17} />

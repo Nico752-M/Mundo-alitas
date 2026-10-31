@@ -1462,51 +1462,45 @@ html:has(.ma-home) { scroll-behavior: smooth; }
 .gift-photo:nth-child(2) { background-position: center; }
 .gift-photo:nth-child(3) { background-position: 50% center; }
 
-/* REGISTRO — celular: foto fija de fondo + sin zoom al escribir */
+/* REGISTRO — celular: formulario transparente, campos legibles */
 @media (max-width: 980px) {
-  /* foto fija a pantalla completa, detrás del contenido */
-  .gift-atmosphere {
-    position: fixed;
-    inset: 0;
-    height: 100%;
-  }
-  .gift-photo {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    transform: none;
-    background-size: cover;
-    filter: saturate(1.15) brightness(1.05);
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-  .gift-photo.is-active { opacity: .55; }
-
-  /* oscurece suavemente para que el texto se lea */
-  .gift-atmosphere::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(9,10,9,.15) 0%, rgba(9,10,9,.45) 55%, rgba(9,10,9,.7) 100%);
-  }
-
-  /* ya no hace falta dejar espacio para la franja */
-  .form-page.registration-theme:not(.registration-theme-default) .registration-layout {
-    padding-top: 38px;
-  }
-
-  /* el formulario deja ver la foto a través */
   .form-page .registration-form {
-    background:
-      linear-gradient(145deg, rgba(255,255,255,.05), transparent 48%),
-      rgba(12,12,11,.62);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
+    background: rgba(8,8,8,.12);
+    border-color: rgba(255,255,255,.14);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .form-page .registration-form::after { display: none; }
+
+  /* etiquetas con sombra para leerse sobre la foto */
+  .form-page .registration-form label,
+  .form-page .registration-form legend,
+  .form-page .form-heading {
+    text-shadow: 0 1px 8px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8);
   }
 
-  /* evita el zoom automático de iPhone al enfocar un campo */
+  /* los campos y opciones sí llevan fondo para escribir cómodo */
   .form-page .registration-form input {
-    font-size: 16px;
+    background: rgba(8,8,8,.82);
+    border-color: rgba(255,255,255,.22);
+  }
+  .form-page .gift-option {
+    background: rgba(8,8,8,.78);
+  }
+  .form-page .gift-option.selected {
+    background: rgba(8,8,8,.82);
+  }
+
+  /* botón apagado, claramente inactivo */
+  .form-page .submit-button:disabled {
+    opacity: .5;
+    filter: grayscale(.4);
+  }
+
+  /* la foto se ve más */
+  .gift-photo.is-active { opacity: .8; }
+  .gift-atmosphere::after {
+    background: linear-gradient(to bottom, rgba(9,10,9,.05) 0%, rgba(9,10,9,.3) 60%, rgba(9,10,9,.5) 100%);
   }
 }
