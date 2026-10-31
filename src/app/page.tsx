@@ -129,6 +129,17 @@ export default function Home() {
       });
     };
 
+    const hero = root.querySelector<HTMLElement>(".ma-hero");
+    const onMouseMove = (e: MouseEvent) => {
+      if (reduceMotion || window.innerWidth < 900 || !hero) return;
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      hero.style.setProperty("--ma-mx", x.toFixed(3));
+      hero.style.setProperty("--ma-my", y.toFixed(3));
+    };
+    hero?.addEventListener("mousemove", onMouseMove);
+
     const onScroll = () => {
       if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateScrollState);
     };
@@ -139,6 +150,7 @@ export default function Home() {
     return () => {
       revealObserver?.disconnect();
       sectionObserver?.disconnect();
+      hero?.removeEventListener("mousemove", onMouseMove);
       if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
