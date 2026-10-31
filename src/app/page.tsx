@@ -9,8 +9,9 @@ const foodPhotos = {
   wings: "/images/Como_alitas.png",     // abajo izquierda
   chicken:  "/images/Bebidas.png", // arriba derecha
   platter: "/images/Plato_alitas.png",  // arriba izquierda
-  meal: "/images/Hamburguesas.png",        // abajo derecha y sección "tres pasos"
+  meal:  "/images/Hamburguesas.png" ,       // abajo derecha y sección "tres pasos"
 };
+
 
 const marqueeItems = [
   "Los reyes de las alitas",
@@ -22,9 +23,9 @@ const marqueeItems = [
 ];
 
 const gifts = [
-  { name: "1 alita", text: "Una alita para disfrutar con todo el sabor de la casa.", tone: "char", photo: "/images/alita.png", cutout: "/images/alita_sin_fondo.png" },
-  { name: "Papas a la francesa", text: "Una porción para disfrutar en la mesa.", tone: "ember", photo: "/images/Papas.jpg", cutout: "/images/Papas_sin_fondo.png" },
-  { name: "Una bebida", text: "El complemento perfecto para tu visita.", tone: "mustard", photo: "/images/cerezada.png", cutout: "/images/cerezada_sin_fondo.png" },
+  { name: "1 alita", text: "Una alita para disfrutar con todo el sabor de la casa.", tone: "char" },
+  { name: "Papas a la francesa", text: "Una porción para disfrutar en la mesa.", tone: "ember" },
+  { name: "Una bebida", text: "El complemento perfecto para tu visita.", tone: "mustard" },
 ];
 
 const steps = [
@@ -217,14 +218,7 @@ export default function Home() {
                 <span className="ma-card-num">{String(i + 1).padStart(2, "0")}</span>
                 <span className="ma-card-icon"><Gift size={26} /></span>
               </div>
-
-              <div className="ma-card-stage">
-                <div className="ma-card-frame" style={{ ["--photo" as string]: `url(${gift.photo})` }} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="ma-card-cutout" src={gift.cutout} alt="" aria-hidden="true" loading="lazy" />
-              </div>
-
-              <div className="ma-card-body">
+              <div>
                 <h3>{gift.name}</h3>
                 <p>{gift.text}</p>
                 <span className="ma-card-stamp">REGALO DE LA CASA</span>
