@@ -6,10 +6,10 @@ import { useEffect } from "react";
 import { ArrowDown, ArrowRight, Gift, MapPin, ScanLine } from "lucide-react";
 
 const foodPhotos = {
-  wings: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=1200&q=90",
-  chicken: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=1200&q=90",
-  platter: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=1200&q=90",
-  meal: "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&w=1200&q=90",
+  wings: "/images/Como_alitas.png",     // abajo izquierda
+  chicken: "/images/Hamburguesas.png",  // arriba derecha
+  platter: "/images/Plato_alitas.png",  // arriba izquierda
+  meal: "/images/Bebidas.png",          // abajo derecha y sección "tres pasos"
 };
 
 const marqueeItems = [
