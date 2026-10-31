@@ -1384,3 +1384,50 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   .wing-animation, .fries-rain span, .soda-bubbles i { animation: none !important; }
   .wing-animation { transform: rotate(-12deg); }
 }
+
+
+/* ==========================================================
+   IMÁGENES DE FONDO EN LAS TARJETAS DE REGALOS (con degradado)
+   ========================================================== */
+.ma-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.ma-card:hover::before { transform: scale(1.06); }
+
+/* 01 — Alita */
+.ma-card-char::before {
+  background-image:
+    linear-gradient(to top, rgba(48,32,14,.97) 6%, rgba(48,32,14,.78) 42%, rgba(48,32,14,.25) 100%),
+    url("/images/alita.png");
+  background-size: 100% 100%, cover;
+  background-position: center, center;
+}
+
+/* 02 — Papas */
+.ma-card-ember::before {
+  background-image:
+    linear-gradient(to top, rgba(233,185,47,.98) 6%, rgba(233,185,47,.80) 42%, rgba(233,185,47,.30) 100%),
+    url("/images/Papas.jpg");
+  background-size: 100% 100%, cover;
+  background-position: center, center;
+}
+
+/* 03 — Bebida (cerezada) */
+.ma-card-mustard::before {
+  background-image:
+    linear-gradient(to top, rgba(74,53,23,.97) 6%, rgba(74,53,23,.78) 42%, rgba(74,53,23,.25) 100%),
+    url("/images/cerezada.png");
+  background-size: 100% 100%, cover;
+  background-position: center, center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ma-card::before { transition: none; }
+  .ma-card:hover::before { transform: none; }
+}
