@@ -1462,45 +1462,63 @@ html:has(.ma-home) { scroll-behavior: smooth; }
 .gift-photo:nth-child(2) { background-position: center; }
 .gift-photo:nth-child(3) { background-position: 50% center; }
 
-/* REGISTRO — celular: formulario transparente, campos legibles */
+/* REGISTRO — celular: foto fija de fondo, formulario transparente, sin zoom */
 @media (max-width: 980px) {
-  .form-page .registration-form {
-    background: rgba(8,8,8,.12);
+  /* foto fija a pantalla completa */
+  .gift-atmosphere { position: fixed; inset: 0; height: 100%; }
+  .gift-photo {
+    position: absolute;
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    background-size: cover;
+    filter: saturate(1.15) brightness(1.05);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .gift-photo:nth-child(1) { background-position: 45% 40%; }
+  .gift-photo:nth-child(2) { background-position: center 55%; }
+  .gift-photo:nth-child(3) { background-position: 50% 45%; }
+  .gift-photo.is-active { opacity: .9; }
+
+  .gift-atmosphere::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(9,10,9,0) 0%, rgba(9,10,9,.2) 60%, rgba(9,10,9,.4) 100%);
+  }
+
+  /* sin espacio extra arriba */
+  .form-page.registration-theme .registration-layout { padding-top: 38px; }
+
+  /* formulario transparente */
+  .form-page.registration-theme .registration-form {
+    background: rgba(8,8,8,.08) !important;
     border-color: rgba(255,255,255,.14);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
   }
   .form-page .registration-form::after { display: none; }
 
-  /* etiquetas con sombra para leerse sobre la foto */
+  /* etiquetas legibles sobre la foto */
   .form-page .registration-form label,
   .form-page .registration-form legend,
   .form-page .form-heading {
     text-shadow: 0 1px 8px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8);
   }
 
-  /* los campos y opciones sí llevan fondo para escribir cómodo */
-  .form-page .registration-form input {
-    background: rgba(8,8,8,.82);
+  /* campos y opciones con fondo oscuro; 16px evita el zoom en iPhone */
+  .form-page.registration-theme .registration-form input {
+    background: rgba(8,8,8,.8) !important;
     border-color: rgba(255,255,255,.22);
+    font-size: 16px !important;
   }
-  .form-page .gift-option {
-    background: rgba(8,8,8,.78);
-  }
-  .form-page .gift-option.selected {
-    background: rgba(8,8,8,.82);
-  }
+  .form-page.registration-theme .gift-option { background: rgba(8,8,8,.78) !important; }
+  .form-page.registration-theme .gift-option.selected { background: rgba(8,8,8,.85) !important; }
 
-  /* botón apagado, claramente inactivo */
-  .form-page .submit-button:disabled {
-    opacity: .5;
-    filter: grayscale(.4);
-  }
-
-  /* la foto se ve más */
-  .gift-photo.is-active { opacity: .8; }
-  .gift-atmosphere::after {
-    background: linear-gradient(to bottom, rgba(9,10,9,.05) 0%, rgba(9,10,9,.3) 60%, rgba(9,10,9,.5) 100%);
-  }
+  .form-page .submit-button:disabled { opacity: .5; filter: grayscale(.4); }
 }
