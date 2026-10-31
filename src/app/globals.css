@@ -1387,52 +1387,88 @@ html:has(.ma-home) { scroll-behavior: smooth; }
 
 
 /* ==========================================================
-   IMÁGENES DE FONDO EN LAS TARJETAS DE REGALOS (con degradado)
+   TARJETAS DE REGALOS — marco ondulado + producto que sobresale
    ========================================================== */
-.ma-card::before {
-  content: "";
+.ma-card::before { content: none !important; background: none !important; } /* limpia restos */
+
+.ma-card-char    { --tone: 48,32,14; }
+.ma-card-ember   { --tone: 233,185,47; }
+.ma-card-mustard { --tone: 74,53,23; }
+
+.ma-card {
+  overflow: visible;
+  min-height: 0;
+  padding: 24px 24px 28px;
+  justify-content: flex-start;
+  gap: 0;
+}
+.ma-card:hover { z-index: 5; }
+
+/* número e icono flotan sobre el marco */
+.ma-card-top { position: absolute; top: 22px; left: 24px; right: 24px; z-index: 4; pointer-events: none; }
+.ma-card-num { font-size: clamp(64px, 6vw, 96px); text-shadow: 0 4px 24px rgba(0,0,0,.4); }
+.ma-card-ember .ma-card-num { text-shadow: 0 4px 24px rgba(255,255,255,.3); }
+
+/* escenario: marco + producto */
+.ma-card-stage { position: relative; height: 300px; margin: 6px 0 52px; }
+
+.ma-card-frame {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  background-image:
+    linear-gradient(to top, rgba(var(--tone), .8) 0%, rgba(var(--tone), 0) 55%),
+    var(--photo);
+  background-size: cover;
+  background-position: center;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M14 4Q50 12 86 4Q96 4 96 14Q88 50 96 86Q96 96 86 96Q50 88 14 96Q4 96 4 86Q12 50 4 14Q4 4 14 4Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M14 4Q50 12 86 4Q96 4 96 14Q88 50 96 86Q96 96 86 96Q50 88 14 96Q4 96 4 86Q12 50 4 14Q4 4 14 4Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  transition: transform .7s cubic-bezier(.2,.9,.25,1.2), opacity .5s ease;
+}
+.ma-card:hover .ma-card-frame { transform: rotate(-2.5deg) scale(1.03); opacity: .5; }
+
+/* producto recortado: sale del marco */
+.ma-card-cutout {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: -30px;
+  height: 108%;
+  width: auto;
+  max-width: 92%;
+  object-fit: contain;
+  opacity: 0;
   pointer-events: none;
-  background-repeat: no-repeat;
-  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+  transform: translate(-50%, 36px) scale(.72) rotate(-6deg);
+  filter: drop-shadow(0 26px 24px rgba(0,0,0,.5));
+  transition: opacity .35s ease, transform .75s cubic-bezier(.2,.9,.25,1.25);
 }
-.ma-card:hover::before { transform: scale(1.06); }
-
-/* 01 — Alita */
-.ma-card-char::before {
-  background-image:
-    linear-gradient(to top, rgba(48,32,14,.97) 6%, rgba(48,32,14,.78) 42%, rgba(48,32,14,.25) 100%),
-    url("/images/alita.png");
-  background-size: 100% 100%, cover;
-  background-position: center, center;
+.ma-card:hover .ma-card-cutout {
+  opacity: 1;
+  transform: translate(-50%, -10px) scale(1.1) rotate(3deg);
 }
 
-/* 02 — Papas */
-.ma-card-ember::before {
-  background-image:
-    linear-gradient(to top, rgba(233,185,47,.98) 6%, rgba(233,185,47,.80) 42%, rgba(233,185,47,.30) 100%),
-    url("/images/Papas.jpg");
-  background-size: 100% 100%, cover;
-  background-position: center, center;
+/* texto debajo del marco */
+.ma-card-body { position: relative; z-index: 4; }
+.ma-card-stamp { padding: 0; border: 0; border-radius: 0; font-size: 11px; letter-spacing: .16em; opacity: .85; }
+.ma-card-stamp::before { content: "✦ "; }
+
+/* celular: no hay hover, el producto se muestra al aparecer la tarjeta */
+@media (hover: none) {
+  .ma-card.is-visible .ma-card-frame { opacity: .55; }
+  .ma-card.is-visible .ma-card-cutout { opacity: 1; transform: translate(-50%, -6px) scale(1) rotate(0deg); }
 }
 
-/* 03 — Bebida (cerezada) */
-.ma-card-mustard::before {
-  background-image:
-    linear-gradient(to top, rgba(74,53,23,.97) 6%, rgba(74,53,23,.78) 42%, rgba(74,53,23,.25) 100%),
-    url("/images/cerezada.png");
-  background-size: 100% 100%, cover;
-  background-position: center, center;
+@media (max-width: 900px) {
+  .ma-card-stage { height: 270px; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .ma-card::before { transition: none; }
-  .ma-card:hover::before { transform: none; }
+  .ma-card-frame, .ma-card-cutout { transition: opacity .2s ease; }
 }
 
-/* REGISTRO — foto del regalo (PC) */
+
+/* ==========================================================
+   REGISTRO — foto del regalo seleccionado (PC)
+   ========================================================== */
 .gift-photo {
   position: absolute;
   top: 50%;
@@ -1444,7 +1480,6 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0;
-  /* difumina derecha, arriba y abajo para que no haya cortes */
   -webkit-mask-image:
     linear-gradient(to right, #000 45%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
@@ -1456,15 +1491,12 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   transition: opacity .9s ease;
 }
 .gift-photo.is-active { opacity: .6; }
-
-/* Encuadre por foto (1 alita, 2 papas, 3 cerezada) */
 .gift-photo:nth-child(1) { background-position: 40% center; }
 .gift-photo:nth-child(2) { background-position: center; }
 .gift-photo:nth-child(3) { background-position: 50% center; }
 
-/* REGISTRO — celular: foto fija de fondo, formulario transparente, sin zoom */
+/* REGISTRO — celular: foto fija, formulario transparente, sin zoom */
 @media (max-width: 980px) {
-  /* foto fija a pantalla completa */
   .gift-atmosphere { position: fixed; inset: 0; height: 100%; }
   .gift-photo {
     position: absolute;
@@ -1491,10 +1523,8 @@ html:has(.ma-home) { scroll-behavior: smooth; }
     background: linear-gradient(to bottom, rgba(9,10,9,0) 0%, rgba(9,10,9,.2) 60%, rgba(9,10,9,.4) 100%);
   }
 
-  /* sin espacio extra arriba */
   .form-page.registration-theme .registration-layout { padding-top: 38px; }
 
-  /* formulario transparente */
   .form-page.registration-theme .registration-form {
     background: rgba(8,8,8,.08) !important;
     border-color: rgba(255,255,255,.14);
@@ -1504,14 +1534,12 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   }
   .form-page .registration-form::after { display: none; }
 
-  /* etiquetas legibles sobre la foto */
   .form-page .registration-form label,
   .form-page .registration-form legend,
   .form-page .form-heading {
     text-shadow: 0 1px 8px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.8);
   }
 
-  /* campos y opciones con fondo oscuro; 16px evita el zoom en iPhone */
   .form-page.registration-theme .registration-form input {
     background: rgba(8,8,8,.8) !important;
     border-color: rgba(255,255,255,.22);
@@ -1523,30 +1551,21 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   .form-page .submit-button:disabled { opacity: .5; filter: grayscale(.4); }
 }
 
-/* Título del hero: se revela de abajo hacia arriba */
+/* ==========================================================
+   HERO — animaciones (título, mouse y flotación)
+   ========================================================== */
 @keyframes ma-title-in {
   from { clip-path: inset(0 0 100% 0); transform: translateY(40%); }
-  to   { clip-path: inset(0 0 0 0);    transform: translateY(0); }
+  to   { clip-path: inset(-30% -10% -30% -10%); transform: translateY(0); }
 }
-.ma-hero h1 span {
-  animation: ma-title-in 1s cubic-bezier(.2,.7,.2,1) both;
-}
+.ma-hero h1 span { animation: ma-title-in 1s cubic-bezier(.2,.7,.2,1) both; }
 .ma-hero h1 .ma-title-second { animation-delay: .18s; }
 
-@media (prefers-reduced-motion: reduce) {
-  .ma-hero h1 span { animation: none; }
-}
-/* Fotos del hero se desplazan con el mouse (profundidad distinta por foto) */
 .ma-photo { transition: filter .5s ease, translate .25s ease-out; }
 .ma-photo-top-left     { translate: calc(var(--ma-mx, 0) * 22px)  calc(var(--ma-my, 0) * 22px); }
 .ma-photo-top-right    { translate: calc(var(--ma-mx, 0) * -30px) calc(var(--ma-my, 0) * 26px); }
 .ma-photo-bottom-left  { translate: calc(var(--ma-mx, 0) * 34px)  calc(var(--ma-my, 0) * -24px); }
 .ma-photo-bottom-right { translate: calc(var(--ma-mx, 0) * -20px) calc(var(--ma-my, 0) * -30px); }
-
-@media (max-width: 900px), (prefers-reduced-motion: reduce) {
-  .ma-photo-top-left, .ma-photo-top-right,
-  .ma-photo-bottom-left, .ma-photo-bottom-right { translate: none; }
-}
 
 @keyframes ma-bob {
   0%, 100% { margin-top: 0; }
@@ -1554,110 +1573,19 @@ html:has(.ma-home) { scroll-behavior: smooth; }
 }
 .ma-photo-top-left     { animation: ma-bob 6s ease-in-out infinite; }
 .ma-photo-top-right    { animation: ma-bob 7s ease-in-out -2s infinite; }
-.ma-photo-bottom-left  { animation: ma-bob 6.5s ease-in-out -4s infinite; }
-.ma-photo-bottom-right { animation: ma-bob 7.5s ease-in-out -1s infinite; }
-
-@media (prefers-reduced-motion: reduce) {
-  .ma-photo-top-left, .ma-photo-top-right,
-  .ma-photo-bottom-left, .ma-photo-bottom-right { animation: none; }
+@keyframes ma-bob-up {
+  0%, 100% { margin-bottom: 0; }
+  50%      { margin-bottom: 10px; }
 }
-
-/* ==========================================================
-   TARJETAS DE REGALOS — fondo con degradado + producto que sale al hover
-   ========================================================== */
-.ma-card { overflow: visible; }
-.ma-card:hover { z-index: 5; }
-
-/* el fondo respeta las esquinas de la tarjeta y se atenúa al hover */
-.ma-card::before {
-  border-radius: inherit;
-  transition: opacity .5s ease;
-}
-.ma-card:hover::before { transform: none; opacity: .5; }
-
-/* texto siempre por encima del producto */
-.ma-card-top,
-.ma-card > div:last-child { position: relative; z-index: 2; }
-
-/* producto recortado */
-.ma-card-cutout {
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  top: 6%;
-  width: 82%;
-  max-height: 60%;
-  object-fit: contain;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 20%) scale(.78) rotate(-5deg);
-  filter: drop-shadow(0 28px 30px rgba(0,0,0,.55));
-  transition: opacity .35s ease, transform .75s cubic-bezier(.2,.9,.25,1.25);
-}
-.ma-card:hover .ma-card-cutout {
-  opacity: 1;
-  transform: translate(-50%, -20%) scale(1.08) rotate(2deg);
-}
-
-/* etiqueta sin aspecto de botón (borra estas 7 líneas si prefieres el borde) */
-.ma-card-stamp { padding: 0; border: 0; border-radius: 0; font-size: 11px; letter-spacing: .16em; opacity: .85; }
-.ma-card-stamp::before { content: "✦ "; }
-
-/* celular / pantallas táctiles: no hay hover, sale al aparecer la tarjeta */
-@media (hover: none) {
-  .ma-card.is-visible::before { opacity: .55; }
-  .ma-card.is-visible .ma-card-cutout {
-    opacity: 1;
-    transform: translate(-50%, -10%) scale(1) rotate(0deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ma-card-cutout { transition: opacity .2s ease; transform: translate(-50%, -10%); }
-}
-
-
-
-
-
-
-
-
-
-
-@keyframes ma-blob {
-  0%   { border-radius: 58% 42% 55% 45% / 52% 58% 42% 48%; }
-  33%  { border-radius: 44% 56% 40% 60% / 60% 44% 56% 40%; }
-  66%  { border-radius: 52% 48% 62% 38% / 42% 56% 44% 58%; }
-  100% { border-radius: 40% 60% 48% 52% / 56% 40% 60% 44%; }
-}
-
-/* fotos limpias (sin degradado encima) */
-.ma-card-char::before    { background-image: url("/images/alita.png"); }
-.ma-card-ember::before   { background-image: url("/images/Papas.jpg"); }
-.ma-card-mustard::before { background-image: url("/images/cerezada.png"); }
-
-/* el número se lee sobre la foto */
-.ma-card-num { text-shadow: 0 4px 24px rgba(0,0,0,.45); }
-.ma-card-ember .ma-card-num { text-shadow: 0 4px 24px rgba(255,255,255,.35); }
-
-/* "REGALO DE LA CASA": etiqueta, no botón */
-.ma-card-stamp {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  font-size: 11px;
-  letter-spacing: .16em;
-  opacity: .85;
-}
-.ma-card-stamp::before { content: "✦ "; }
-.ma-card:hover .ma-card-stamp { letter-spacing: .2em; }
+.ma-photo-bottom-left  { animation: ma-bob-up 6.5s ease-in-out -4s infinite; }
+.ma-photo-bottom-right { animation: ma-bob-up 7.5s ease-in-out -1s infinite; }
 
 @media (max-width: 900px) {
-  .ma-card { min-height: 500px; }
-  .ma-card::before { height: 250px; }
+  .ma-photo-top-left, .ma-photo-top-right,
+  .ma-photo-bottom-left, .ma-photo-bottom-right { translate: none; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .ma-card::before { animation: none; }
+  .ma-hero h1 span { animation: none; }
+  .ma-photo-top-left, .ma-photo-top-right,
+  .ma-photo-bottom-left, .ma-photo-bottom-right { animation: none; translate: none; }
 }
