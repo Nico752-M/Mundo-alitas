@@ -6,12 +6,11 @@ import { useEffect } from "react";
 import { ArrowDown, ArrowRight, Gift, MapPin, ScanLine } from "lucide-react";
 
 const foodPhotos = {
-  wings: "/images/Como_alitas.png",     // abajo izquierda
-  chicken:  "/images/Bebidas.png", // arriba derecha
+  wings:  "/images/Bebidas.png",      // abajo izquierda
+  chicken: "/images/Hamburguesas.png",  // arriba derecha
   platter: "/images/Plato_alitas.png",  // arriba izquierda
-  meal:  "/images/Hamburguesas.png" ,       // abajo derecha y sección "tres pasos"
+  meal:  "/images/Como_alitas.png",        // abajo derecha y sección "tres pasos"
 };
-
 
 const marqueeItems = [
   "Los reyes de las alitas",
