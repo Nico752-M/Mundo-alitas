@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { ArrowDown, ArrowRight, Gift, MapPin, ScanLine } from "lucide-react";
+const GIFT_IMAGES = ["/images/alita.png", "/images/Papas.jpg", "/images/cerezada.png"];
 
 const foodPhotos = {
   wings: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=1200&q=90",

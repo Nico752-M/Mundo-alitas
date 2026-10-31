@@ -6,6 +6,8 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft, Check, ChevronRight, Copy, Gift, RotateCcw } from "lucide-react";
 import { GIFTS } from "@/lib/gifts";
+const GIFT_IMAGES = ["/images/alita.png", "/images/Papas.jpg", "/images/cerezada.png"];
+
 
 type Registration = {
   id: string;
@@ -116,21 +118,14 @@ export default function RegistroPage() {
         <Link href="/" className="back-link"><ArrowLeft size={15} /> Inicio</Link>
       </header>
 
-      <div className={`gift-atmosphere gift-atmosphere-${selectedGiftIndex + 1}`} aria-hidden="true">
-        {selectedGiftIndex === 0 && <span className="wing-animation">🍗</span>}
-
-        {selectedGiftIndex === 1 && (
-          <div className="fries-rain">
-            <span>🍟</span><span>🍟</span><span>🍟</span>
-            <span>🍟</span><span>🍟</span><span>🍟</span>
-          </div>
-        )}
-
-        {selectedGiftIndex === 2 && (
-          <div className="soda-bubbles">
-            <i /><i /><i /><i /><i /><i /><i /><i /><i />
-          </div>
-        )}
+      <div className="gift-atmosphere" aria-hidden="true">
+        {GIFT_IMAGES.map((src, i) => (
+          <div
+            key={src}
+            className={`gift-photo ${selectedGiftIndex === i ? "is-active" : ""}`}
+            style={{ backgroundImage: `url(${src})` }}
+          />
+        ))}
       </div>
 
       <section className="registration-layout">
