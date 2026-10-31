@@ -1432,35 +1432,35 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   .ma-card:hover::before { transform: none; }
 }
 
-/* REGISTRO — fotos de fondo según el regalo elegido */
+/* REGISTRO — foto del regalo en la zona izquierda */
 .gift-photo {
   position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
+  top: 50%;
+  left: 0;
+  width: min(62vw, 1000px);
+  height: min(86vh, 760px);
+  transform: translateY(-50%);
+  background-size: contain;      /* se ve el producto completo, sin recortes */
+  background-repeat: no-repeat;
+  background-position: left center;
   opacity: 0;
-  filter: saturate(1.1) brightness(.8);
-  -webkit-mask-image: linear-gradient(to right, #000 0%, rgba(0,0,0,.6) 35%, transparent 72%);
-  mask-image: linear-gradient(to right, #000 0%, rgba(0,0,0,.6) 35%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 40% 50%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at 40% 50%, #000 35%, transparent 100%);
   transition: opacity .9s ease;
 }
-.gift-photo.is-active {
-  opacity: .5;
-  animation: gift-zoom 16s ease-in-out infinite alternate;
-}
-@keyframes gift-zoom {
-  from { transform: scale(1); }
-  to   { transform: scale(1.08); }
-}
+.gift-photo.is-active { opacity: .55; }
 
 @media (max-width: 980px) {
   .gift-photo {
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.5) 40%, transparent 75%);
-    mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.5) 40%, transparent 75%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45vh;
+    transform: none;
+    background-size: cover;
+    background-position: center;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.5) 50%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.5) 50%, transparent 100%);
   }
   .gift-photo.is-active { opacity: .35; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gift-photo.is-active { animation: none; }
 }
