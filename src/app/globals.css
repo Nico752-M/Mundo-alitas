@@ -1464,11 +1464,10 @@ html:has(.ma-home) { scroll-behavior: smooth; }
 
 /* REGISTRO — foto del regalo (CELULAR / TABLET) */
 @media (max-width: 980px) {
-  /* la foto pasa a ser una franja arriba, debajo del encabezado */
   .gift-atmosphere {
     position: absolute;
     inset: 64px 0 auto 0;
-    height: 36vh;
+    height: 46vh;
   }
   .gift-photo {
     top: 0;
@@ -1476,19 +1475,28 @@ html:has(.ma-home) { scroll-behavior: smooth; }
     width: 100%;
     height: 100%;
     transform: none;
-    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    background-size: cover;
+    filter: saturate(1.15) brightness(1.08) contrast(1.05);
+    /* solo se difumina el borde inferior, el resto queda nítido */
+    -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
     -webkit-mask-composite: source-over;
-    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
     mask-composite: add;
   }
-  .gift-photo.is-active { opacity: .95; }
+  .gift-photo.is-active { opacity: 1; }
 
-  /* deja espacio para la franja cuando ya hay un regalo elegido */
+  /* encuadre por foto en celular */
+  .gift-photo:nth-child(1) { background-position: 45% 40%; }
+  .gift-photo:nth-child(2) { background-position: center 55%; }
+  .gift-photo:nth-child(3) { background-position: 50% 45%; }
+
+  /* espacio para la franja al elegir regalo */
   .form-page.registration-theme:not(.registration-theme-default) .registration-layout {
-    padding-top: calc(36vh - 12px);
+    padding-top: calc(46vh - 20px);
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .gift-photo { transition: none; }
+  /* el texto sigue legible sobre el borde difuminado */
+  .form-page .registration-intro h1 {
+    text-shadow: 0 4px 24px rgba(0,0,0,.7);
+  }
 }
