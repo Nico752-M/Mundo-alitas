@@ -1561,3 +1561,61 @@ html:has(.ma-home) { scroll-behavior: smooth; }
   .ma-photo-top-left, .ma-photo-top-right,
   .ma-photo-bottom-left, .ma-photo-bottom-right { animation: none; }
 }
+
+/* ==========================================================
+   TARJETAS DE REGALOS — foto en forma de blob + etiqueta sin aspecto de botón
+   ========================================================== */
+.ma-card { min-height: 540px; }
+
+/* la foto pasa de fondo completo a blob en la parte de arriba */
+.ma-card::before {
+  inset: 18px 18px auto 18px;
+  height: 290px;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  border-radius: 58% 42% 55% 45% / 52% 58% 42% 48%;
+  box-shadow: 0 20px 50px rgba(0,0,0,.35);
+  animation: ma-blob 9s ease-in-out infinite alternate;
+  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.ma-card:nth-child(2)::before { animation-delay: -3s; animation-duration: 11s; }
+.ma-card:nth-child(3)::before { animation-delay: -6s; animation-duration: 10s; }
+.ma-card:hover::before { transform: scale(1.05) rotate(-2deg); }
+
+@keyframes ma-blob {
+  0%   { border-radius: 58% 42% 55% 45% / 52% 58% 42% 48%; }
+  33%  { border-radius: 44% 56% 40% 60% / 60% 44% 56% 40%; }
+  66%  { border-radius: 52% 48% 62% 38% / 42% 56% 44% 58%; }
+  100% { border-radius: 40% 60% 48% 52% / 56% 40% 60% 44%; }
+}
+
+/* fotos limpias (sin degradado encima) */
+.ma-card-char::before    { background-image: url("/images/alita.png"); }
+.ma-card-ember::before   { background-image: url("/images/Papas.jpg"); }
+.ma-card-mustard::before { background-image: url("/images/cerezada.png"); }
+
+/* el número se lee sobre la foto */
+.ma-card-num { text-shadow: 0 4px 24px rgba(0,0,0,.45); }
+.ma-card-ember .ma-card-num { text-shadow: 0 4px 24px rgba(255,255,255,.35); }
+
+/* "REGALO DE LA CASA": etiqueta, no botón */
+.ma-card-stamp {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 11px;
+  letter-spacing: .16em;
+  opacity: .85;
+}
+.ma-card-stamp::before { content: "✦ "; }
+.ma-card:hover .ma-card-stamp { letter-spacing: .2em; }
+
+@media (max-width: 900px) {
+  .ma-card { min-height: 500px; }
+  .ma-card::before { height: 250px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ma-card::before { animation: none; }
+}
