@@ -22,9 +22,9 @@ const marqueeItems = [
 ];
 
 const gifts = [
-  { name: "1 alita", text: "Una alita para disfrutar con todo el sabor de la casa.", tone: "char" },
-  { name: "Papas a la francesa", text: "Una porción para disfrutar en la mesa.", tone: "ember" },
-  { name: "Una bebida", text: "El complemento perfecto para tu visita.", tone: "mustard" },
+  { name: "1 alita", text: "Una alita para disfrutar con todo el sabor de la casa.", tone: "char", cutout: "/images/alita_sin_fondo.png" },
+  { name: "Papas a la francesa", text: "Una porción para disfrutar en la mesa.", tone: "ember", cutout: "/images/Papas_sin_fondo.png" },
+  { name: "Una bebida", text: "El complemento perfecto para tu visita.", tone: "mustard", cutout: "/images/cerezada_sin_fondo.png" },
 ];
 
 const steps = [
@@ -213,6 +213,8 @@ export default function Home() {
         <div className="ma-gifts">
           {gifts.map((gift, i) => (
             <article key={gift.name} className={`ma-card ma-card-${gift.tone}`} data-reveal data-delay={i}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="ma-card-cutout" src={gift.cutout} alt="" aria-hidden="true" loading="lazy" />
               <div className="ma-card-top">
                 <span className="ma-card-num">{String(i + 1).padStart(2, "0")}</span>
                 <span className="ma-card-icon"><Gift size={26} /></span>

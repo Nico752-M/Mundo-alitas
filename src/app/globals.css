@@ -1563,25 +1563,67 @@ html:has(.ma-home) { scroll-behavior: smooth; }
 }
 
 /* ==========================================================
-   TARJETAS DE REGALOS — foto en forma de blob + etiqueta sin aspecto de botón
+   TARJETAS DE REGALOS — fondo con degradado + producto que sale al hover
    ========================================================== */
-.ma-card { min-height: 540px; }
+.ma-card { overflow: visible; }
+.ma-card:hover { z-index: 5; }
 
-/* la foto pasa de fondo completo a blob en la parte de arriba */
+/* el fondo respeta las esquinas de la tarjeta y se atenúa al hover */
 .ma-card::before {
-  inset: 18px 18px auto 18px;
-  height: 290px;
-  z-index: -1;
-  background-size: cover;
-  background-position: center;
-  border-radius: 58% 42% 55% 45% / 52% 58% 42% 48%;
-  box-shadow: 0 20px 50px rgba(0,0,0,.35);
-  animation: ma-blob 9s ease-in-out infinite alternate;
-  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+  border-radius: inherit;
+  transition: opacity .5s ease;
 }
-.ma-card:nth-child(2)::before { animation-delay: -3s; animation-duration: 11s; }
-.ma-card:nth-child(3)::before { animation-delay: -6s; animation-duration: 10s; }
-.ma-card:hover::before { transform: scale(1.05) rotate(-2deg); }
+.ma-card:hover::before { transform: none; opacity: .5; }
+
+/* texto siempre por encima del producto */
+.ma-card-top,
+.ma-card > div:last-child { position: relative; z-index: 2; }
+
+/* producto recortado */
+.ma-card-cutout {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 6%;
+  width: 82%;
+  max-height: 60%;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 20%) scale(.78) rotate(-5deg);
+  filter: drop-shadow(0 28px 30px rgba(0,0,0,.55));
+  transition: opacity .35s ease, transform .75s cubic-bezier(.2,.9,.25,1.25);
+}
+.ma-card:hover .ma-card-cutout {
+  opacity: 1;
+  transform: translate(-50%, -20%) scale(1.08) rotate(2deg);
+}
+
+/* etiqueta sin aspecto de botón (borra estas 7 líneas si prefieres el borde) */
+.ma-card-stamp { padding: 0; border: 0; border-radius: 0; font-size: 11px; letter-spacing: .16em; opacity: .85; }
+.ma-card-stamp::before { content: "✦ "; }
+
+/* celular / pantallas táctiles: no hay hover, sale al aparecer la tarjeta */
+@media (hover: none) {
+  .ma-card.is-visible::before { opacity: .55; }
+  .ma-card.is-visible .ma-card-cutout {
+    opacity: 1;
+    transform: translate(-50%, -10%) scale(1) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ma-card-cutout { transition: opacity .2s ease; transform: translate(-50%, -10%); }
+}
+
+
+
+
+
+
+
+
+
 
 @keyframes ma-blob {
   0%   { border-radius: 58% 42% 55% 45% / 52% 58% 42% 48%; }
