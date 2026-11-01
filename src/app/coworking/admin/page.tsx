@@ -422,7 +422,7 @@ export default function CoworkingAdminPage() {
         <div className="coworking-overview-item">
           <DoorOpen size={21} />
           <div>
-            <strong>{activeCodes.length}</strong>
+            <strong>{activeCodes}</strong>
             <span>Códigos disponibles</span>
           </div>
         </div>
