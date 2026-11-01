@@ -165,6 +165,7 @@ export default function Home() {
         <nav className="ma-nav" aria-label="Navegación principal">
           <a href="#regalos">REGALOS</a>
           <a href="#experiencia">CÓMO PARTICIPAR</a>
+          <Link href="/coworking">COWORKING</Link>
         </nav>
         <Link href="/registro" className="ma-btn ma-btn-header">
           PARTICIPAR <ArrowRight size={16} />
