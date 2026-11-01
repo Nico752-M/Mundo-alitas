@@ -6,8 +6,8 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft, Check, ChevronRight, Copy, Gift, RotateCcw } from "lucide-react";
 import { GIFTS } from "@/lib/gifts";
-const GIFT_IMAGES = ["/images/alita.png", "/images/Papas.jpg", "/images/cerezada.png"];
 
+const GIFT_IMAGES = ["/images/alita.png", "/images/Papas.jpg", "/images/cerezada.png"];
 
 type Registration = {
   id: string;
@@ -16,8 +16,16 @@ type Registration = {
   qr_token: string;
 };
 
+const initialForm = {
+  full_name: "",
+  whatsapp: "",
+  instagram: "",
+  birth_date: "",
+  gift: ""
+};
+
 export default function RegistroPage() {
-  const [form, setForm] = useState({ full_name: "", whatsapp: "", instagram: "", gift: "" });
+  const [form, setForm] = useState(initialForm);
   const [result, setResult] = useState<Registration | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,14 +39,20 @@ export default function RegistroPage() {
     event.preventDefault();
     setError("");
     setLoading(true);
+
     try {
       const response = await fetch("/api/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)
       });
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "No fue posible completar el registro.");
+
+      if (!response.ok) {
+        throw new Error(data.error || "No fue posible completar el registro.");
+      }
+
       setResult(data.participant);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ocurrió un error inesperado.");
@@ -55,12 +69,15 @@ export default function RegistroPage() {
   }
 
   const selectedGiftIndex = GIFTS.findIndex((gift) => gift.value === form.gift);
-  const giftTheme = selectedGiftIndex >= 0 ? `registration-theme-${selectedGiftIndex + 1}` : "registration-theme-default";
+  const giftTheme = selectedGiftIndex >= 0
+    ? `registration-theme-${selectedGiftIndex + 1}`
+    : "registration-theme-default";
 
   const formComplete =
     form.full_name.trim().length >= 3 &&
     form.whatsapp.trim().length >= 7 &&
     form.instagram.trim().length >= 2 &&
+    form.birth_date !== "" &&
     form.gift !== "";
 
   if (result) {
@@ -107,7 +124,7 @@ export default function RegistroPage() {
             className="text-button success-reset"
             onClick={() => {
               setResult(null);
-              setForm({ full_name: "", whatsapp: "", instagram: "", gift: "" });
+              setForm(initialForm);
             }}
           >
             <RotateCcw size={15} /> Registrar otra persona
@@ -189,6 +206,17 @@ export default function RegistroPage() {
             />
           </label>
 
+          <label>
+            Fecha de cumpleaños
+            <input
+              type="date"
+              value={form.birth_date}
+              onChange={(e) => update("birth_date", e.target.value)}
+              max={new Date().toLocaleDateString("en-CA")}
+              required
+            />
+          </label>
+
           <fieldset>
             <legend>Elige tu regalo</legend>
             <div className="gift-options">
@@ -213,9 +241,9 @@ export default function RegistroPage() {
           </fieldset>
 
           {error && <p className="error-message">{error}</p>}
-          
+
           {!formComplete && (
-            <p className="privacy-note">Completa los tres datos y elige tu regalo para continuar.</p>
+            <p className="privacy-note">Completa tus datos, indica tu cumpleaños y elige tu regalo para continuar.</p>
           )}
 
           <button
