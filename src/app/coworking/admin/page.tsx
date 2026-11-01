@@ -57,6 +57,7 @@ const ROOMS = ["Elon", "Bobadilla", "Raquel", "Rita"];
 
 const formatDate = (value: string | null) => {
   if (!value) return "Sin fecha";
+
   return new Date(`${value}T00:00:00`).toLocaleDateString("es-CO", {
     day: "2-digit",
     month: "long",
@@ -73,7 +74,10 @@ export default function CoworkingAdminPage() {
 
   const [codes, setCodes] = useState<Code[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [codeForm, setCodeForm] = useState({ code: "", max_uses: "10" });
+  const [codeForm, setCodeForm] = useState({
+    code: "",
+    max_uses: "10"
+  });
 
   const [notice, setNotice] = useState("");
   const [activeView, setActiveView] = useState<AdminView>("home");
@@ -170,7 +174,9 @@ export default function CoworkingAdminPage() {
       setAuthenticated(true);
       setPassword("");
     } catch (err) {
-      setLoginError(err instanceof Error ? err.message : "Error de acceso.");
+      setLoginError(
+        err instanceof Error ? err.message : "Error de acceso."
+      );
     } finally {
       setBusy(false);
     }
@@ -209,7 +215,9 @@ export default function CoworkingAdminPage() {
       setNotice(`Código ${data.code.code} creado correctamente.`);
       await loadData();
     } catch (err) {
-      setNotice(err instanceof Error ? err.message : "Error al crear el código.");
+      setNotice(
+        err instanceof Error ? err.message : "Error al crear el código."
+      );
     } finally {
       setBusy(false);
     }
@@ -236,7 +244,9 @@ export default function CoworkingAdminPage() {
 
       await loadData();
     } catch (err) {
-      setNotice(err instanceof Error ? err.message : "Error al actualizar.");
+      setNotice(
+        err instanceof Error ? err.message : "Error al actualizar."
+      );
     }
   }
 
@@ -269,7 +279,11 @@ export default function CoworkingAdminPage() {
       setAccessResult(data as AccessResult);
       await loadData();
     } catch (err) {
-      setNotice(err instanceof Error ? err.message : "No fue posible validar el QR.");
+      setNotice(
+        err instanceof Error
+          ? err.message
+          : "No fue posible validar el QR."
+      );
     } finally {
       setBusy(false);
       processingRef.current = false;
@@ -319,7 +333,8 @@ export default function CoworkingAdminPage() {
   ).length;
 
   const availableSlots = codes.reduce(
-    (total, code) => total + Math.max(0, code.max_uses - code.used_count),
+    (total, code) =>
+      total + Math.max(0, code.max_uses - code.used_count),
     0
   );
 
@@ -338,6 +353,7 @@ export default function CoworkingAdminPage() {
           <Link href="/coworking" className="wordmark">
             MUNDO <span>ALITAS</span>
           </Link>
+
           <Link href="/coworking" className="back-link">
             <ArrowLeft size={15} /> Coworking
           </Link>
@@ -347,8 +363,10 @@ export default function CoworkingAdminPage() {
           <div className="operator-symbol">
             <ShieldCheck size={25} />
           </div>
+
           <p className="eyebrow">ADMINISTRACIÓN COWORKING</p>
           <h1>ACCESO<br /><em>PRIVADO.</em></h1>
+
           <p className="muted">
             Utiliza la misma contraseña de administración del sistema Mundo Alitas.
           </p>
@@ -366,9 +384,14 @@ export default function CoworkingAdminPage() {
               />
             </label>
 
-            {loginError && <p className="error-message">{loginError}</p>}
+            {loginError && (
+              <p className="error-message">{loginError}</p>
+            )}
 
-            <button className="button button-gold submit-button" disabled={busy}>
+            <button
+              className="button button-gold submit-button"
+              disabled={busy}
+            >
               {busy ? "Verificando..." : "Entrar al panel"}
             </button>
           </form>
@@ -388,146 +411,137 @@ export default function CoworkingAdminPage() {
           <Link href="/coworking" className="back-link">
             <ArrowLeft size={15} /> Coworking
           </Link>
+
           <button className="text-button" onClick={logout}>
             <LogOut size={15} /> Cerrar sesión
           </button>
         </div>
       </header>
 
-      <section className="coworking-admin-heading">
-        <p className="eyebrow">PANEL DE CONTROL</p>
-        <h1>GESTIONAR<br /><em>COWORKING.</em></h1>
-        <p className="muted">
-          Administra los códigos, las reservas y el ingreso de visitantes.
-        </p>
-      </section>
-
-      <section className="coworking-admin-overview">
-        <div className="coworking-overview-item">
-          <Ticket size={21} />
-          <div>
-            <strong>{codes.length}</strong>
-            <span>Códigos creados</span>
-          </div>
-        </div>
-
-        <div className="coworking-overview-item">
-          <Users size={21} />
-          <div>
-            <strong>{participants.length}</strong>
-            <span>Personas inscritas</span>
-          </div>
-        </div>
-
-        <div className="coworking-overview-item">
-          <DoorOpen size={21} />
-          <div>
-            <strong>{activeCodes}</strong>
-            <span>Códigos disponibles</span>
-          </div>
-        </div>
-
-        <div className="coworking-overview-item">
-          <CalendarDays size={21} />
-          <div>
-            <strong>{availableSlots}</strong>
-            <span>Cupos restantes</span>
-          </div>
-        </div>
-      </section>
-
-      <nav className="coworking-admin-navigation">
-        <button
-          className={activeView === "home" ? "admin-nav-active" : ""}
-          onClick={() => void changeView("home")}
-        >
-          <span className="admin-nav-icon"><DoorOpen size={22} /></span>
-          <span><strong>Inicio</strong><small>Resumen general</small></span>
-          <ArrowRight size={17} />
-        </button>
-
-        <button
-          className={activeView === "create" ? "admin-nav-active" : ""}
-          onClick={() => void changeView("create")}
-        >
-          <span className="admin-nav-icon"><Plus size={22} /></span>
-          <span><strong>Crear código</strong><small>Generar nuevos accesos</small></span>
-          <ArrowRight size={17} />
-        </button>
-
-        <button
-          className={activeView === "scanner" ? "admin-nav-active" : ""}
-          onClick={() => void changeView("scanner")}
-        >
-          <span className="admin-nav-icon"><ScanLine size={22} /></span>
-          <span><strong>Validador</strong><small>Escanear códigos QR</small></span>
-          <ArrowRight size={17} />
-        </button>
-
-        <button
-          className={activeView === "codes" ? "admin-nav-active" : ""}
-          onClick={() => void changeView("codes")}
-        >
-          <span className="admin-nav-icon"><Ticket size={22} /></span>
-          <span><strong>Códigos creados</strong><small>Control de cupos</small></span>
-          <ArrowRight size={17} />
-        </button>
-
-        <button
-          className={activeView === "people" ? "admin-nav-active" : ""}
-          onClick={() => void changeView("people")}
-        >
-          <span className="admin-nav-icon"><Users size={22} /></span>
-          <span><strong>Personas inscritas</strong><small>Reservas por sala</small></span>
-          <ArrowRight size={17} />
-        </button>
-      </nav>
-
-      {notice && <p className="coworking-notice">{notice}</p>}
-
-      {activeView === "home" && (
-        <section className="coworking-admin-data">
-          <div className="coworking-data-heading">
-            <div>
-              <p className="eyebrow">RESUMEN</p>
-              <h2>ESTADO DEL <em>COWORKING.</em></h2>
-            </div>
-          </div>
-
-          <div className="coworking-home-grid">
-            <button onClick={() => void changeView("create")}>
-              <Plus size={25} />
-              <strong>Crear un código</strong>
-              <span>Registra un nuevo código y define su cantidad de usos.</span>
-            </button>
-
-            <button onClick={() => void changeView("scanner")}>
-              <ScanLine size={25} />
-              <strong>Validar una entrada</strong>
-              <span>Activa la cámara y verifica el QR de cada visitante.</span>
-            </button>
-
-            <button onClick={() => void changeView("codes")}>
-              <Ticket size={25} />
-              <strong>Consultar códigos</strong>
-              <span>Revisa los códigos creados y los cupos disponibles.</span>
-            </button>
-
-            <button onClick={() => void changeView("people")}>
-              <Users size={25} />
-              <strong>Ver personas inscritas</strong>
-              <span>Consulta visitantes y reservas organizados por sala.</span>
-            </button>
-          </div>
-        </section>
+      {notice && (
+        <p className="coworking-notice">{notice}</p>
       )}
 
+      {/* INICIO */}
+      {activeView === "home" && (
+        <>
+          <section className="coworking-admin-heading">
+            <p className="eyebrow">PANEL DE CONTROL</p>
+            <h1>GESTIONAR<br /><em>COWORKING.</em></h1>
+
+            <p className="muted">
+              Administra los códigos, las reservas y el ingreso de visitantes.
+            </p>
+          </section>
+
+          <section className="coworking-admin-overview">
+            <div className="coworking-overview-item">
+              <Ticket size={21} />
+              <div>
+                <strong>{codes.length}</strong>
+                <span>Códigos creados</span>
+              </div>
+            </div>
+
+            <div className="coworking-overview-item">
+              <Users size={21} />
+              <div>
+                <strong>{participants.length}</strong>
+                <span>Personas inscritas</span>
+              </div>
+            </div>
+
+            <div className="coworking-overview-item">
+              <DoorOpen size={21} />
+              <div>
+                <strong>{activeCodes}</strong>
+                <span>Códigos disponibles</span>
+              </div>
+            </div>
+
+            <div className="coworking-overview-item">
+              <CalendarDays size={21} />
+              <div>
+                <strong>{availableSlots}</strong>
+                <span>Cupos restantes</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="coworking-admin-data">
+            <div className="coworking-data-heading">
+              <div>
+                <p className="eyebrow">ADMINISTRACIÓN</p>
+                <h2>¿QUÉ DESEAS <em>GESTIONAR?</em></h2>
+              </div>
+            </div>
+
+            <div className="coworking-home-grid">
+              <button onClick={() => void changeView("create")}>
+                <span className="admin-nav-icon">
+                  <Plus size={25} />
+                </span>
+                <strong>Crear código</strong>
+                <span>
+                  Genera nuevos accesos y define la cantidad de personas.
+                </span>
+                <ArrowRight size={18} />
+              </button>
+
+              <button onClick={() => void changeView("scanner")}>
+                <span className="admin-nav-icon">
+                  <ScanLine size={25} />
+                </span>
+                <strong>Validador de entrada</strong>
+                <span>
+                  Escanea el código QR y confirma el ingreso de visitantes.
+                </span>
+                <ArrowRight size={18} />
+              </button>
+
+              <button onClick={() => void changeView("codes")}>
+                <span className="admin-nav-icon">
+                  <Ticket size={25} />
+                </span>
+                <strong>Códigos creados</strong>
+                <span>
+                  Consulta los accesos, usos y cupos disponibles.
+                </span>
+                <ArrowRight size={18} />
+              </button>
+
+              <button onClick={() => void changeView("people")}>
+                <span className="admin-nav-icon">
+                  <Users size={25} />
+                </span>
+                <strong>Personas inscritas</strong>
+                <span>
+                  Consulta visitantes y reservas organizados por sala.
+                </span>
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* CREAR CÓDIGO */}
       {activeView === "create" && (
-        <section className="coworking-admin-data">
+        <section className="coworking-admin-data coworking-admin-subview">
+          <button
+            className="coworking-back-home"
+            onClick={() => void changeView("home")}
+          >
+            <ArrowLeft size={17} /> Volver al inicio
+          </button>
+
           <div className="coworking-data-heading">
             <div>
               <p className="eyebrow">NUEVO ACCESO</p>
               <h2>CREAR <em>CÓDIGO.</em></h2>
+              <p className="muted">
+                Genera un código y establece cuántas personas pueden utilizarlo.
+              </p>
             </div>
           </div>
 
@@ -573,7 +587,10 @@ export default function CoworkingAdminPage() {
                 />
               </label>
 
-              <button className="button button-gold submit-button" disabled={busy}>
+              <button
+                className="button button-gold submit-button"
+                disabled={busy}
+              >
                 {busy ? "Creando..." : "Crear código"} <Plus size={16} />
               </button>
             </form>
@@ -586,13 +603,25 @@ export default function CoworkingAdminPage() {
         </section>
       )}
 
+      {/* VALIDADOR QR */}
       {activeView === "scanner" && (
-        <section className="coworking-admin-data">
+        <section className="coworking-admin-data coworking-admin-subview">
+          <button
+            className="coworking-back-home"
+            onClick={() => void changeView("home")}
+          >
+            <ArrowLeft size={17} /> Volver al inicio
+          </button>
+
           <div className="coworking-data-heading">
             <div>
               <p className="eyebrow">CONTROL DE ENTRADA</p>
               <h2>VALIDAR <em>QR.</em></h2>
+              <p className="muted">
+                Escanea el código QR del visitante para verificar su entrada.
+              </p>
             </div>
+
             <span className="live-dot">
               ● {scannerActive ? "CÁMARA ACTIVA" : "EN ESPERA"}
             </span>
@@ -633,7 +662,9 @@ export default function CoworkingAdminPage() {
             {accessResult && (
               <div
                 className={`redemption-result ${
-                  accessResult.status === "entered" ? "redeemed" : "not_found"
+                  accessResult.status === "entered"
+                    ? "redeemed"
+                    : "not_found"
                 }`}
               >
                 {accessResult.status === "entered" ? (
@@ -652,7 +683,9 @@ export default function CoworkingAdminPage() {
 
                 {accessResult.full_name && (
                   <>
-                    <span className="result-name">{accessResult.full_name}</span>
+                    <span className="result-name">
+                      {accessResult.full_name}
+                    </span>
                     <span>{accessResult.whatsapp}</span>
                   </>
                 )}
@@ -662,19 +695,32 @@ export default function CoworkingAdminPage() {
         </section>
       )}
 
+      {/* CÓDIGOS CREADOS */}
       {activeView === "codes" && (
-        <section className="coworking-admin-data">
+        <section className="coworking-admin-data coworking-admin-subview">
+          <button
+            className="coworking-back-home"
+            onClick={() => void changeView("home")}
+          >
+            <ArrowLeft size={17} /> Volver al inicio
+          </button>
+
           <div className="coworking-data-heading">
             <div>
               <p className="eyebrow">CONTROL DE CUPOS</p>
               <h2>CÓDIGOS <em>CREADOS.</em></h2>
+              <p className="muted">
+                Consulta el estado y el uso de cada código de acceso.
+              </p>
             </div>
+
             <span>{codes.length} códigos</span>
           </div>
 
           {codes.length === 0 ? (
             <div className="scanner-card">
               <p className="muted">Todavía no has creado códigos.</p>
+
               <button
                 className="button button-gold"
                 onClick={() => void changeView("create")}
@@ -685,22 +731,39 @@ export default function CoworkingAdminPage() {
           ) : (
             <div className="coworking-code-list">
               {codes.map((code) => {
-                const remaining = Math.max(0, code.max_uses - code.used_count);
+                const remaining = Math.max(
+                  0,
+                  code.max_uses - code.used_count
+                );
+
                 const percentage = Math.min(
                   100,
                   (code.used_count / code.max_uses) * 100
                 );
+
                 const available = code.active && remaining > 0;
 
                 return (
-                  <article className="coworking-code-card" key={code.id}>
+                  <article
+                    className="coworking-code-card"
+                    key={code.id}
+                  >
                     <div className="coworking-code-card-top">
                       <div>
                         <span className="eyebrow">CÓDIGO DE ACCESO</span>
                         <h3>{code.code}</h3>
                       </div>
-                      <span className={available ? "code-status-active" : "code-status-inactive"}>
-                        {available ? "Disponible" : "Inactivo / Agotado"}
+
+                      <span
+                        className={
+                          available
+                            ? "code-status-active"
+                            : "code-status-inactive"
+                        }
+                      >
+                        {available
+                          ? "Disponible"
+                          : "Inactivo / Agotado"}
                       </span>
                     </div>
 
@@ -709,10 +772,12 @@ export default function CoworkingAdminPage() {
                         <strong>{code.used_count}</strong>
                         <span>Utilizados</span>
                       </div>
+
                       <div>
                         <strong>{remaining}</strong>
                         <span>Restantes</span>
                       </div>
+
                       <div>
                         <strong>{code.max_uses}</strong>
                         <span>Cupo total</span>
@@ -725,13 +790,17 @@ export default function CoworkingAdminPage() {
 
                     <div className="coworking-code-card-bottom">
                       <span>
-                        Creado: {new Date(code.created_at).toLocaleDateString("es-CO")}
+                        Creado:{" "}
+                        {new Date(code.created_at).toLocaleDateString("es-CO")}
                       </span>
+
                       <button
                         className="text-button"
                         onClick={() => void toggleCode(code)}
                       >
-                        {code.active ? "Desactivar código" : "Activar código"}
+                        {code.active
+                          ? "Desactivar código"
+                          : "Activar código"}
                       </button>
                     </div>
                   </article>
@@ -742,13 +811,25 @@ export default function CoworkingAdminPage() {
         </section>
       )}
 
+      {/* PERSONAS INSCRITAS */}
       {activeView === "people" && (
-        <section className="coworking-admin-data">
+        <section className="coworking-admin-data coworking-admin-subview">
+          <button
+            className="coworking-back-home"
+            onClick={() => void changeView("home")}
+          >
+            <ArrowLeft size={17} /> Volver al inicio
+          </button>
+
           <div className="coworking-data-heading">
             <div>
               <p className="eyebrow">VISITANTES Y RESERVAS</p>
               <h2>PERSONAS <em>INSCRITAS.</em></h2>
+              <p className="muted">
+                Selecciona una sala para consultar sus reservas.
+              </p>
             </div>
+
             <span>{participants.length} registros</span>
           </div>
 
@@ -761,8 +842,13 @@ export default function CoworkingAdminPage() {
               >
                 <DoorOpen size={18} />
                 <strong>{room}</strong>
+
                 <span>
-                  {participants.filter((person) => person.room === room).length}
+                  {
+                    participants.filter(
+                      (person) => person.room === room
+                    ).length
+                  }
                 </span>
               </button>
             ))}
@@ -773,6 +859,7 @@ export default function CoworkingAdminPage() {
               <p className="eyebrow">PERSONAS ASIGNADAS A</p>
               <h3>{selectedRoom}</h3>
             </div>
+
             <span>{roomParticipants.length} personas</span>
           </div>
 
@@ -785,14 +872,24 @@ export default function CoworkingAdminPage() {
           ) : (
             <div className="coworking-people-list">
               {roomParticipants.map((person) => (
-                <article className="coworking-person-card" key={person.id}>
+                <article
+                  className="coworking-person-card"
+                  key={person.id}
+                >
                   <div className="coworking-person-top">
                     <div>
                       <span className="eyebrow">VISITANTE</span>
                       <h3>{person.full_name}</h3>
                       <span>{person.whatsapp}</span>
                     </div>
-                    <span className={person.entered_at ? "person-entered" : "person-pending"}>
+
+                    <span
+                      className={
+                        person.entered_at
+                          ? "person-entered"
+                          : "person-pending"
+                      }
+                    >
                       {person.entered_at ? "Ingresó" : "Pendiente"}
                     </span>
                   </div>
@@ -802,7 +899,9 @@ export default function CoworkingAdminPage() {
                       <CalendarDays size={17} />
                       <span>
                         <small>Fecha de reserva</small>
-                        <strong>{formatDate(person.reservation_date)}</strong>
+                        <strong>
+                          {formatDate(person.reservation_date)}
+                        </strong>
                       </span>
                     </div>
 
@@ -820,8 +919,12 @@ export default function CoworkingAdminPage() {
                   </div>
 
                   <div className="coworking-person-footer">
-                    <span>Cumpleaños: {formatDate(person.birth_date)}</span>
-                    <span>Código: {person.coworking_codes?.code ?? "—"}</span>
+                    <span>
+                      Cumpleaños: {formatDate(person.birth_date)}
+                    </span>
+                    <span>
+                      Código: {person.coworking_codes?.code ?? "—"}
+                    </span>
                   </div>
                 </article>
               ))}
@@ -831,12 +934,17 @@ export default function CoworkingAdminPage() {
           {unassignedParticipants.length > 0 && (
             <div className="coworking-unassigned">
               <h3>Registros anteriores sin sala asignada</h3>
+
               <p>
                 Hay {unassignedParticipants.length} registros antiguos que no
                 tienen información de reserva.
               </p>
+
               {unassignedParticipants.map((person) => (
-                <div className="coworking-unassigned-person" key={person.id}>
+                <div
+                  className="coworking-unassigned-person"
+                  key={person.id}
+                >
                   <strong>{person.full_name}</strong>
                   <span>{person.whatsapp}</span>
                   <span>{person.coworking_codes?.code ?? "—"}</span>
