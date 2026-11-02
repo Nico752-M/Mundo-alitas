@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -21,14 +20,8 @@ const initialForm = {
   code: "",
   full_name: "",
   whatsapp: "",
-  birth_date: "",
-  room: "",
-  reservation_date: "",
-  start_time: "",
-  end_time: ""
+  birth_date: ""
 };
-
-const rooms = ["Elon", "Bobadilla", "Raquel", "Rita"];
 
 export default function CoworkingRegistroPage() {
   const [form, setForm] = useState(initialForm);
@@ -43,12 +36,6 @@ export default function CoworkingRegistroPage() {
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-
-    if (form.end_time <= form.start_time) {
-      setError("La hora de finalización debe ser posterior a la hora de inicio.");
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -226,58 +213,6 @@ export default function CoworkingRegistroPage() {
             />
           </label>
 
-          <div className="form-heading">
-            <span>RESERVA DE ESPACIO</span>
-            <span>02 / 02</span>
-          </div>
-
-          <label>
-            Selecciona una sala
-            <select
-              value={form.room}
-              onChange={(e) => update("room", e.target.value)}
-              required
-            >
-              <option value="">Elige una sala</option>
-              {rooms.map((room) => (
-                <option key={room} value={room}>{room}</option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            Fecha de reserva
-            <input
-              type="date"
-              value={form.reservation_date}
-              onChange={(e) => update("reservation_date", e.target.value)}
-              min={new Date().toLocaleDateString("en-CA")}
-              required
-            />
-          </label>
-
-          <div className="reservation-time-fields">
-            <label>
-              Hora de inicio
-              <input
-                type="time"
-                value={form.start_time}
-                onChange={(e) => update("start_time", e.target.value)}
-                required
-              />
-            </label>
-
-            <label>
-              Hora de finalización
-              <input
-                type="time"
-                value={form.end_time}
-                onChange={(e) => update("end_time", e.target.value)}
-                required
-              />
-            </label>
-          </div>
-
           {error && <p className="error-message">{error}</p>}
 
           <button
@@ -285,7 +220,7 @@ export default function CoworkingRegistroPage() {
             type="submit"
             disabled={loading}
           >
-            {loading ? "Validando reserva..." : "Confirmar inscripción"}
+            {loading ? "Validando..." : "Confirmar inscripción"}
             <Check size={17} />
           </button>
 
