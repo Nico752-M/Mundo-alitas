@@ -1,5 +1,6 @@
 
 "use client";
+import "../coworking.css";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
