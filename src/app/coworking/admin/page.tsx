@@ -714,7 +714,8 @@ export default function CoworkingAdminPage() {
               <span>{scannerActive ? "ACTIVO" : "LISTO"}</span>
             </div>
 
-            <div id="coworking-reader" className="scanner-viewport">
+            <div className="scanner-viewport">
+              <div id="coworking-reader" />
               {!scannerActive && (
                 <div className="scanner-placeholder">
                   <Camera size={30} />
