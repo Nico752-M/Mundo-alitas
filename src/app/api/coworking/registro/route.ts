@@ -19,26 +19,8 @@ const schema = z.object({
   ),
   birth_date: z.string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .refine(validDate, "La fecha de cumpleaños no es válida."),
-  room: z.enum(["Elon", "Bobadilla", "Raquel", "Rita"]),
-  reservation_date: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .refine(validDate, "La fecha de reserva no es válida."),
-  start_time: z.string().regex(
-    /^([01]\d|2[0-3]):[0-5]\d$/,
-    "La hora de inicio no es válida."
-  ),
-  end_time: z.string().regex(
-    /^([01]\d|2[0-3]):[0-5]\d$/,
-    "La hora de finalización no es válida."
-  )
-}).refine(
-  (data) => data.end_time > data.start_time,
-  {
-    message: "La hora de finalización debe ser posterior a la hora de inicio.",
-    path: ["end_time"]
-  }
-);
+    .refine(validDate, "La fecha de cumpleaños no es válida.")
+});
 
 export async function POST(request: Request) {
   try {
@@ -57,17 +39,13 @@ export async function POST(request: Request) {
     const supabase = getSupabaseAdmin();
 
     const { data, error } = await supabase.rpc(
-      "register_coworking_participant",
+      "register_coworking_participant_by_code",
       {
         p_code: parsed.data.code.toUpperCase(),
         p_full_name: parsed.data.full_name,
         p_whatsapp: parsed.data.whatsapp,
         p_qr_token: qr_token,
-        p_birth_date: parsed.data.birth_date,
-        p_room: parsed.data.room,
-        p_reservation_date: parsed.data.reservation_date,
-        p_start_time: parsed.data.start_time,
-        p_end_time: parsed.data.end_time
+        p_birth_date: parsed.data.birth_date
       }
     );
 
@@ -79,9 +57,8 @@ export async function POST(request: Request) {
       const messages: Record<string, string> = {
         invalid_code: "El código no existe o está desactivado.",
         code_exhausted: "Este código ya alcanzó su límite de registros.",
-        room_occupied: "Esta sala ya está reservada en ese horario. Elige otra hora o sala.",
-        invalid_room: "La sala seleccionada no es válida.",
-        invalid_schedule: "La fecha o el horario de la reserva no son válidos."
+        code_without_schedule: "Este código no tiene sala u horario asignado. Consulta con el establecimiento.",
+        invalid_schedule: "La fecha de cumpleaños no es válida."
       };
 
       return NextResponse.json(
@@ -100,10 +77,10 @@ export async function POST(request: Request) {
           full_name: result.full_name,
           qr_token: result.qr_token,
           birth_date: parsed.data.birth_date,
-          room: parsed.data.room,
-          reservation_date: parsed.data.reservation_date,
-          start_time: parsed.data.start_time,
-          end_time: parsed.data.end_time
+          room: result.room,
+          reservation_date: result.reservation_date,
+          start_time: String(result.start_time).slice(0, 5),
+          end_time: String(result.end_time).slice(0, 5)
         }
       },
       { status: 201 }
