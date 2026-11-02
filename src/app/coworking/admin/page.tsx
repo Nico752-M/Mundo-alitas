@@ -1,4 +1,3 @@
-
 "use client";
 import "../coworking.css";
 
@@ -56,6 +55,15 @@ type AdminView = "home" | "create" | "scanner" | "codes" | "people";
 
 const ROOMS = ["Elon", "Bobadilla", "Raquel", "Rita"];
 
+const initialCodeForm = {
+  code: "",
+  max_uses: "10",
+  room: "",
+  reservation_date: "",
+  start_time: "",
+  end_time: ""
+};
+
 const formatDate = (value: string | null) => {
   if (!value) return "Sin fecha";
 
@@ -75,10 +83,7 @@ export default function CoworkingAdminPage() {
 
   const [codes, setCodes] = useState<Code[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [codeForm, setCodeForm] = useState({
-    code: "",
-    max_uses: "10"
-  });
+  const [codeForm, setCodeForm] = useState(initialCodeForm);
 
   const [notice, setNotice] = useState("");
   const [activeView, setActiveView] = useState<AdminView>("home");
@@ -194,6 +199,12 @@ export default function CoworkingAdminPage() {
   async function createCode(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice("");
+
+    if (codeForm.end_time <= codeForm.start_time) {
+      setNotice("La hora de finalización debe ser posterior a la hora de inicio.");
+      return;
+    }
+
     setBusy(true);
 
     try {
@@ -202,7 +213,11 @@ export default function CoworkingAdminPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: codeForm.code,
-          max_uses: Number(codeForm.max_uses)
+          max_uses: Number(codeForm.max_uses),
+          room: codeForm.room,
+          reservation_date: codeForm.reservation_date,
+          start_time: codeForm.start_time,
+          end_time: codeForm.end_time
         })
       });
 
@@ -212,7 +227,7 @@ export default function CoworkingAdminPage() {
         throw new Error(data.error || "No fue posible crear el código.");
       }
 
-      setCodeForm({ code: "", max_uses: "10" });
+      setCodeForm(initialCodeForm);
       setNotice(`Código ${data.code.code} creado correctamente.`);
       await loadData();
     } catch (err) {
@@ -541,7 +556,7 @@ export default function CoworkingAdminPage() {
               <p className="eyebrow">NUEVO ACCESO</p>
               <h2>CREAR <em>CÓDIGO.</em></h2>
               <p className="muted">
-                Genera un código y establece cuántas personas pueden utilizarlo.
+                Genera un código y define la sala, el horario y cuántas personas pueden utilizarlo.
               </p>
             </div>
           </div>
@@ -588,6 +603,71 @@ export default function CoworkingAdminPage() {
                 />
               </label>
 
+              <label>
+                Sala
+                <select
+                  value={codeForm.room}
+                  onChange={(e) =>
+                    setCodeForm((v) => ({
+                      ...v,
+                      room: e.target.value
+                    }))
+                  }
+                  required
+                >
+                  <option value="">Elige una sala</option>
+                  {ROOMS.map((room) => (
+                    <option key={room} value={room}>{room}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Fecha de reserva
+                <input
+                  type="date"
+                  value={codeForm.reservation_date}
+                  onChange={(e) =>
+                    setCodeForm((v) => ({
+                      ...v,
+                      reservation_date: e.target.value
+                    }))
+                  }
+                  min={new Date().toLocaleDateString("en-CA")}
+                  required
+                />
+              </label>
+
+              <label>
+                Hora de inicio
+                <input
+                  type="time"
+                  value={codeForm.start_time}
+                  onChange={(e) =>
+                    setCodeForm((v) => ({
+                      ...v,
+                      start_time: e.target.value
+                    }))
+                  }
+                  required
+                />
+              </label>
+
+              <label>
+                Hora de finalización
+                <input
+                  type="time"
+                  value={codeForm.end_time}
+                  onChange={(e) =>
+                    setCodeForm((v) => ({
+                      ...v,
+                      end_time: e.target.value
+                    }))
+                  }
+                  required
+                />
+              </label>
+
               <button
                 className="button button-gold submit-button"
                 disabled={busy}
@@ -598,7 +678,7 @@ export default function CoworkingAdminPage() {
 
             <p className="privacy-note">
               Entrega el código únicamente después de confirmar el pago.
-              Cada inscripción consume un cupo.
+              Cada inscripción consume un cupo y recibe esta sala y este horario.
             </p>
           </div>
         </section>
