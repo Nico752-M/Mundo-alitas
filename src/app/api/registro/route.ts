@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { run, withTransaction } from "@/lib/oracle";
 
 const schema = z.object({
   full_name: z.string().trim().min(3).max(100),
@@ -15,23 +15,23 @@ export async function POST(request: Request) {
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Revisa los datos." }, { status: 400 });
 
+    const id = randomUUID();
     const qr_token = randomUUID();
-    const supabase = getSupabaseAdmin();
-    console.error("DEBUG host:", process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host : "SIN URL");
-    const { data, error } = await supabase.from("participants").insert({
-      ...parsed.data,
-      instagram: parsed.data.instagram.replace(/^@/, ""),
-      qr_token
-    }).select("id, full_name, gift, qr_token").single();
+    const { full_name, whatsapp, gift } = parsed.data;
+    const instagram = parsed.data.instagram.replace(/^@/, "");
 
-    if (error) {
-      console.error("Registration insert error:", error.message);
-      return NextResponse.json({ error: "No pudimos guardar tu registro. Inténtalo nuevamente." }, { status: 500 });
-    }
+    await withTransaction((conn) =>
+      run(
+        conn,
+        `INSERT INTO participants (id, full_name, whatsapp, instagram, gift, qr_token)
+         VALUES (:v_id, :v_name, :v_whatsapp, :v_instagram, :v_gift, :v_token)`,
+        { v_id: id, v_name: full_name, v_whatsapp: whatsapp, v_instagram: instagram, v_gift: gift, v_token: qr_token }
+      )
+    );
 
-    return NextResponse.json({ participant: data }, { status: 201 });
+    return NextResponse.json({ participant: { id, full_name, gift, qr_token } }, { status: 201 });
   } catch (error) {
     console.error("Registration API error:", error);
-    return NextResponse.json({ error: "El servicio no está configurado o no está disponible." }, { status: 500 });
+    return NextResponse.json({ error: "No pudimos guardar tu registro. Inténtalo nuevamente." }, { status: 500 });
   }
 }

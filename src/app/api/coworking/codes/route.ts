@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { isAdminSessionValid } from "@/lib/admin-session";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { isUniqueViolation, normalizeTime, query, run, ts, withConnection, withTransaction } from "@/lib/oracle";
 
 const validDate = (value: string) => {
   const date = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(date.getTime()) &&
-    date.toISOString().slice(0, 10) === value;
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 };
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -22,23 +22,33 @@ const createSchema = z.object({
   end_time: z.string().regex(timePattern, "La hora de finalización no es válida.")
 }).refine(
   (data) => data.end_time > data.start_time,
-  {
-    message: "La hora de finalización debe ser posterior a la hora de inicio.",
-    path: ["end_time"]
-  }
+  { message: "La hora de finalización debe ser posterior a la hora de inicio.", path: ["end_time"] }
 );
 const updateSchema = z.object({ id: z.string().uuid(), active: z.boolean() });
+
+type CodeRow = {
+  id: string;
+  code: string;
+  max_uses: number;
+  used_count: number;
+  active: number;
+  created_at: string;
+};
+
+const toCode = (row: CodeRow) => ({ ...row, active: row.active === 1 });
+
+const CODE_COLUMNS = `id, code, max_uses, used_count, active, ${ts("created_at")} AS created_at`;
 
 export async function GET() {
   if (!(await isAdminSessionValid())) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   try {
-    const { data, error } = await getSupabaseAdmin().from("coworking_codes")
-      .select("id, code, max_uses, used_count, active, created_at").order("created_at", { ascending: false });
-    if (error) throw error;
-    return NextResponse.json({ codes: data ?? [] });
+    const rows = await withConnection((conn) =>
+      query<CodeRow>(conn, `SELECT ${CODE_COLUMNS} FROM coworking_codes ORDER BY created_at DESC`)
+    );
+    return NextResponse.json({ codes: rows.map(toCode) });
   } catch (error) {
     console.error("Coworking codes GET:", error);
-    return NextResponse.json({ error: "No fue posible consultar los códigos. Ejecuta primero la migración de Coworking en Supabase." }, { status: 500 });
+    return NextResponse.json({ error: "No fue posible consultar los códigos." }, { status: 500 });
   }
 }
 
@@ -46,51 +56,59 @@ export async function POST(request: Request) {
   if (!(await isAdminSessionValid())) return NextResponse.json({ error: "No autorizado." }, { status: 401 });
   const parsed = createSchema.safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Revisa los datos." }, { status: 400 });
+
   try {
-    const supabase = getSupabaseAdmin();
-    const { room, reservation_date, start_time, end_time } = parsed.data;
+    const { room, reservation_date, max_uses } = parsed.data;
+    // Las horas se guardan como 'HH:MM:SS'; se normalizan para que la comparación de texto sea exacta.
+    const start = normalizeTime(parsed.data.start_time);
+    const end = normalizeTime(parsed.data.end_time);
+    const code = parsed.data.code.toUpperCase();
+    const id = randomUUID();
 
-    // Comprobar que no se cruce con otro código activo en la misma sala y fecha
-    const { data: crossedCodes, error: codesError } = await supabase
-      .from("coworking_codes")
-      .select("id")
-      .eq("active", true)
-      .eq("room", room)
-      .eq("reservation_date", reservation_date)
-      .lt("start_time", end_time)
-      .gt("end_time", start_time)
-      .limit(1);
-    if (codesError) throw codesError;
+    const outcome = await withTransaction(async (conn) => {
+      const overlapBinds = { v_room: room, v_date: reservation_date, v_t_to: end, v_t_from: start };
 
-    // Comprobar que no se cruce con personas ya inscritas en esa sala y fecha
-    const { data: crossedPeople, error: peopleError } = await supabase
-      .from("coworking_participants")
-      .select("id")
-      .eq("room", room)
-      .eq("reservation_date", reservation_date)
-      .lt("start_time", end_time)
-      .gt("end_time", start_time)
-      .limit(1);
-    if (peopleError) throw peopleError;
+      // No se puede cruzar con otro código activo en la misma sala y fecha.
+      const crossedCodes = await query(
+        conn,
+        `SELECT id FROM coworking_codes
+          WHERE active = 1 AND room = :v_room
+            AND reservation_date = TO_DATE(:v_date, 'YYYY-MM-DD')
+            AND start_time < :v_t_to AND end_time > :v_t_from
+          FETCH FIRST 1 ROWS ONLY`,
+        overlapBinds
+      );
 
-    if ((crossedCodes?.length ?? 0) > 0 || (crossedPeople?.length ?? 0) > 0) {
+      // Ni con personas ya inscritas en esa sala y fecha.
+      const crossedPeople = await query(
+        conn,
+        `SELECT id FROM coworking_participants
+          WHERE room = :v_room
+            AND reservation_date = TO_DATE(:v_date, 'YYYY-MM-DD')
+            AND start_time < :v_t_to AND end_time > :v_t_from
+          FETCH FIRST 1 ROWS ONLY`,
+        overlapBinds
+      );
+
+      if (crossedCodes.length > 0 || crossedPeople.length > 0) return { conflict: true as const };
+
+      await run(
+        conn,
+        `INSERT INTO coworking_codes (id, code, max_uses, room, reservation_date, start_time, end_time)
+         VALUES (:v_id, :v_code, :v_max, :v_room, TO_DATE(:v_date, 'YYYY-MM-DD'), :v_t_from, :v_t_to)`,
+        { v_id: id, v_code: code, v_max: max_uses, v_room: room, v_date: reservation_date, v_t_from: start, v_t_to: end }
+      );
+
+      const rows = await query<CodeRow>(conn, `SELECT ${CODE_COLUMNS} FROM coworking_codes WHERE id = :v_id`, { v_id: id });
+      return { created: rows[0] };
+    });
+
+    if ("conflict" in outcome) {
       return NextResponse.json({ error: "Esa sala ya está reservada en ese horario. Elige otra sala u otro horario." }, { status: 409 });
     }
-
-    const { data, error } = await supabase.from("coworking_codes")
-      .insert({
-        code: parsed.data.code.toUpperCase(),
-        max_uses: parsed.data.max_uses,
-        room,
-        reservation_date,
-        start_time,
-        end_time
-      })
-      .select("id, code, max_uses, used_count, active, created_at").single();
-    if (error?.code === "23505") return NextResponse.json({ error: "Ese código ya existe. Elige otro." }, { status: 409 });
-    if (error) throw error;
-    return NextResponse.json({ code: data }, { status: 201 });
+    return NextResponse.json({ code: toCode(outcome.created) }, { status: 201 });
   } catch (error) {
+    if (isUniqueViolation(error)) return NextResponse.json({ error: "Ese código ya existe. Elige otro." }, { status: 409 });
     console.error("Coworking codes POST:", error);
     return NextResponse.json({ error: "No fue posible crear el código." }, { status: 500 });
   }
@@ -101,8 +119,12 @@ export async function PATCH(request: Request) {
   const parsed = updateSchema.safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({ error: "Solicitud no válida." }, { status: 400 });
   try {
-    const { error } = await getSupabaseAdmin().from("coworking_codes").update({ active: parsed.data.active }).eq("id", parsed.data.id);
-    if (error) throw error;
+    await withTransaction((conn) =>
+      run(conn, `UPDATE coworking_codes SET active = :v_active WHERE id = :v_id`, {
+        v_active: parsed.data.active ? 1 : 0,
+        v_id: parsed.data.id.toLowerCase()
+      })
+    );
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Coworking codes PATCH:", error);
