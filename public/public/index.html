@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080806">
+<meta name="description" content="Mundo Alitas. El sabor tiene alas. Descubre nuestros sabores y haz tu pedido.">
+<title>Mundo Alitas — El sabor tiene alas</title>
+<link rel="icon" href="assets/logo.png">
+<script>try{if(sessionStorage.getItem("ma-intro"))document.documentElement.classList.add("skip-intro")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Oswald:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,700;6..96,800;6..96,900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/intro-hand.png">
+<link rel="preload" as="image" href="assets/intro-wing.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="preloader" aria-label="Cargando Mundo Alitas">
+  <div class="preloader-mark"><img src="assets/logo.png" alt="Mundo Alitas"></div>
+  <div class="intro-creation" aria-hidden="true">
+    <img class="intro-hand" src="assets/intro-hand.png" alt="" decoding="async">
+    <img class="intro-wing" src="assets/intro-wing.png" alt="" decoding="async">
+    <span class="intro-spark"></span>
+  </div>
+  <div class="preloader-track"><span></span></div>
+  <p>PREPARANDO EL ANTOJO</p><strong class="load-number">00%</strong>
+</div>
+<div class="page-curtain" aria-hidden="true"><img src="assets/logo.png" alt=""></div>
+<header class="header" id="inicio">
+  <button class="mobile-toggle" aria-label="Abrir navegación" aria-expanded="false"><i></i><i></i></button>
+  <nav class="nav nav-a"><a href="menu.html">MENÚ</a><a href="lugar.html">LUGAR</a></nav>
+  <a class="brand" href="#inicio" aria-label="Mundo Alitas inicio"><img src="assets/logo.png" alt="Mundo Alitas"></a>
+  <nav class="nav nav-b"><a href="#ubicacion">UBÍCANOS</a><a class="nav-order" href="menu.html">VER MENÚ</a></nav>
+</header>
+
+<main>
+<section class="hero" id="top">
+  <div class="hero-stage">
+    <h1 class="hero-title">
+      <span class="hero-line line-one">MUNDO</span>
+      <span class="hero-line line-two">ALITAS</span>
+    </h1>
+    <div class="wing-rain" aria-hidden="true">
+      <div class="rain-layer rain-back"></div>
+      <div class="rain-layer rain-front"></div>
+    </div>
+  </div>
+
+  <div class="hero-kickers">
+    <span>SABOR QUE<br>TE HACE VOLAR</span>
+    <span>ALITAS<br>SIN LÍMITES</span>
+  </div>
+
+  <div class="hero-bottom">
+    <a href="menu.html" class="button button-yellow">
+      VER MENÚ <b>›</b>
+    </a>
+  </div>
+</section>
+
+<div class="ticker ticker-slim" aria-label="Sabor, crunch y experiencia">
+  <div class="ticker-track"><span>SABOR</span><i>✳</i><span>CRUNCH</span><i>✳</i><span>ACTITUD</span><i>✳</i><span>PARA COMPARTIR</span><i>✳</i><span>SABOR</span><i>✳</i><span>CRUNCH</span><i>✳</i><span>ACTITUD</span><i>✳</i><span>PARA COMPARTIR</span><i>✳</i></div>
+</div>
+
+<section class="statement" id="historia">
+  <p class="statement-text" id="statementText">Hay sabores que reúnen, momentos que se alargan y alitas que siempre piden otra ronda.</p>
+  <div class="statement-actions">
+    <a href="menu.html" class="button-outline">Ver menú</a>
+    <a href="#ubicacion" class="button-outline">Ubícanos</a>
+  </div>
+</section>
+
+<section class="flavors" id="sabores">
+  <div class="flavors-list">
+    <h2>Nuestros sabores</h2>
+    <ul class="flavor-rows">
+      <li><a class="flavor-row" href="menu.html#alitas" data-i="0" data-name="BBQ clásicas" data-tag="Clásica" data-desc="El clásico que siempre provoca."><span class="flavor-thumb"><img src="assets/thumb-bbq.jpg" alt="" loading="lazy"></span><span class="flavor-info"><b>BBQ clásicas</b><small>El clásico que siempre provoca.</small></span><span class="flavor-tag">Clásica</span></a></li>
+      <li><a class="flavor-row" href="menu.html#alitas" data-i="1" data-name="Picantes furiosas" data-tag="Intensa" data-desc="Para quienes disfrutan el fuego."><span class="flavor-thumb"><img src="assets/thumb-hot.jpg" alt="" loading="lazy"></span><span class="flavor-info"><b>Picantes furiosas</b><small>Para quienes disfrutan el fuego.</small></span><span class="flavor-tag">Intensa</span></a></li>
+      <li><a class="flavor-row" href="menu.html#alitas" data-i="2" data-name="Mango honey" data-tag="Dulce" data-desc="Un contraste dulce y atrevido."><span class="flavor-thumb"><img src="assets/thumb-mango.jpg" alt="" loading="lazy"></span><span class="flavor-info"><b>Mango honey</b><small>Un contraste dulce y atrevido.</small></span><span class="flavor-tag">Dulce</span></a></li>
+      <li><a class="flavor-row" href="menu.html#alitas" data-i="3" data-name="BBQ coreana" data-tag="Especial" data-desc="Un giro lleno de personalidad."><span class="flavor-thumb"><img src="assets/thumb-korean.jpg" alt="" loading="lazy"></span><span class="flavor-info"><b>BBQ coreana</b><small>Un giro lleno de personalidad.</small></span><span class="flavor-tag">Especial</span></a></li>
+    </ul>
+    <a href="menu.html#alitas" class="button-outline button-outline-dark">Quiero probarlas</a>
+  </div>
+  <div class="flavors-visual" id="flavorStage" aria-live="polite">
+    <img class="shot is-active" src="assets/flavor-bbq.jpg" style="object-position:50% 38%" alt="Alitas BBQ clásicas">
+    <img class="shot" src="assets/flavor-hot.jpg" style="object-position:45% 45%" alt="Alitas picantes furiosas" loading="lazy">
+    <img class="shot" src="assets/flavor-mango.jpg" style="object-position:50% 35%" alt="Alitas mango honey" loading="lazy">
+    <img class="shot" src="assets/flavor-korean.jpg" style="object-position:50% 55%" alt="Alitas BBQ coreana" loading="lazy">
+    <div class="flavor-caption"><span id="fTag">Clásica</span><strong id="fName">BBQ clásicas</strong><p id="fDesc">El clásico que siempre provoca.</p></div>
+    <div class="flavor-dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+    <span class="flavor-hint">Desliza para ver más</span>
+  </div>
+</section>
+
+<section class="explore" aria-labelledby="exploreTitle">
+  <h2 id="exploreTitle">Explora Mundo Alitas</h2>
+  <div class="explore-grid">
+    <a class="explore-tile" href="menu.html"><img src="assets/order-food.jpg" alt="Alitas crujientes con papas y salsas" loading="lazy"><span class="explore-label"><small>Pide lo que se te antoje</small><b>Menú</b></span><i class="explore-arrow" aria-hidden="true">→</i></a>
+    <a class="explore-tile" href="lugar.html"><img src="assets/lugar-juegos.jpg" alt="Zona de juegos para niños con piscina de pelotas" loading="lazy" style="object-position:62% 50%"><span class="explore-label"><small>Coworking, eventos y cumpleaños</small><b>Lugar</b></span><i class="explore-arrow" aria-hidden="true">→</i></a>
+    <a class="explore-tile" href="#ubicacion"><img src="assets/lugar-fachada.jpg" alt="Fachada de Mundo Alitas con el letrero iluminado" loading="lazy"><span class="explore-label"><small>Cra. 28 #30-30 · Orilla del río</small><b>Ubícanos</b></span><i class="explore-arrow" aria-hidden="true">→</i></a>
+  </div>
+</section>
+
+<section class="lugar-home" id="premios" aria-labelledby="premiosTitle">
+  <div class="lugar-home-head">
+    <div>
+      <span class="eyebrow">LOS REGALOS</span>
+      <h2 id="premiosTitle">Un detalle de la casa.</h2>
+      <p>Queremos agradecerte por elegirnos. Regístrate y selecciona uno de los regalos disponibles para esta experiencia.</p>
+    </div>
+    <a href="/registro" class="button-outline button-outline-dark">Quiero mi regalo</a>
+  </div>
+</section>
+
+<section class="lugar-home" id="lugar" aria-labelledby="lugarHomeTitle">
+  <div class="lugar-home-head">
+    <div>
+      <span class="eyebrow">EL LUGAR</span>
+      <h2 id="lugarHomeTitle">Ven a vivirlo.</h2>
+    </div>
+    <a href="lugar.html" class="button-outline button-outline-dark">Ver todo el lugar</a>
+  </div>
+  <div class="lugar-mosaic">
+    <figure class="m-big"><img src="assets/lugar-patio.jpg" alt="Patio con sombrillas, mesas y pared de ladrillo blanco" loading="lazy" style="object-position:50% 55%"><span class="tag">Patio</span></figure>
+    <figure><img src="assets/lugar-juegos.jpg" alt="Zona de juegos para niños con piscina de pelotas" loading="lazy" style="object-position:62% 50%"><span class="tag">Zona de juegos</span></figure>
+    <figure><img src="assets/lugar-terraza.jpg" alt="Terraza con sillones, plantas y pared de ladrillo" loading="lazy" style="object-position:50% 50%"><span class="tag">Terraza</span></figure>
+    <figure><img src="assets/lugar-sofas.jpg" alt="Sofás de estibas con cojines de la marca" loading="lazy" style="object-position:35% 55%"><span class="tag">Para quedarse un rato</span></figure>
+    <figure><img src="assets/lugar-mural.jpg" alt="Mesas junto al mural de café y las banderas de colores" loading="lazy" style="object-position:55% 50%"><span class="tag">Mural</span></figure>
+  </div>
+</section>
+<section class="loc" id="ubicacion">
+  <div class="loc-info">
+    <span class="eyebrow">UBÍCANOS</span>
+    <h2>¿Nos vemos?</h2>
+    <dl>
+      <dt>Dirección</dt><dd>Cra. 28 #30-30<br>Orilla del río</dd>
+      <dt>Horarios</dt><dd>Por confirmar</dd>
+      <dt>Pedidos</dt><dd>314 717 2603 · WhatsApp</dd>
+    </dl>
+    <div class="loc-actions">
+      <a class="btn btn-yellow" data-map href="https://www.google.com/maps/search/?api=1&query=Cra.%2028%20%2330-30%2C%20Tulu%C3%A1%2C%20Valle%20del%20Cauca%2C%20Colombia" target="_blank" rel="noopener">Cómo llegar <b>›</b></a>
+      <a class="btn btn-line" data-wa="Hola Mundo Alitas 👋" href="https://wa.me/573147172603?text=Hola%20Mundo%20Alitas%20%F0%9F%91%8B" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="loc-view" data-tabs>
+    <div class="tabs" role="tablist" aria-label="Mapa y fachada">
+      <button class="tab-btn" role="tab" id="tab-mapa" data-tab="mapa" aria-selected="true">Mapa</button>
+      <button class="tab-btn" role="tab" id="tab-fachada" data-tab="fachada" aria-selected="false" tabindex="-1">Fachada</button>
+    </div>
+    <div class="loc-stage">
+      <div class="tab-panel" role="tabpanel" data-panel="mapa" aria-labelledby="tab-mapa"><iframe title="Mapa de Mundo Alitas" src="https://www.google.com/maps?q=Cra.%2028%20%2330-30%2C%20Tulu%C3%A1%2C%20Valle%20del%20Cauca%2C%20Colombia&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+      <div class="tab-panel" role="tabpanel" data-panel="fachada" aria-labelledby="tab-fachada" hidden><img src="assets/lugar-fachada.jpg" alt="Fachada de Mundo Alitas con el letrero iluminado" loading="lazy"><span class="tag">Fachada</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer" id="contacto">
+  <div class="footer-cols">
+    <div><h3>Descubre</h3><a href="menu.html">Menú</a><a href="lugar.html">Lugar</a><a href="#premios">Premios</a><a href="#ubicacion">Ubícanos</a></div>
+    <div><h3>Ubicación</h3><a href="#ubicacion">Cra. 28 #30-30</a><a href="#ubicacion">Orilla del río</a></div>
+    <div><h3>Contacto</h3><a data-wa="Hola Mundo Alitas 👋" href="https://wa.me/573147172603" target="_blank" rel="noopener">WhatsApp · 314 717 2603</a><a data-ig href="https://www.instagram.com/mundoalitascolombia" target="_blank" rel="noopener">Instagram</a></div>
+  </div>
+  <p class="footer-wordmark" aria-label="Mundo Alitas">Mundo Alitas</p>
+  <div class="footer-bottom"><span>© <span id="year"></span> Mundo Alitas</span><span>El sabor tiene alas.</span><a href="/canje">Operador</a><a href="/coworking/admin">Administración</a><a href="#inicio">Volver arriba</a></div>
+</footer>
+<div class="float-actions">
+  <a class="float-btn float-ig" data-ig href="https://www.instagram.com/mundoalitascolombia" target="_blank" rel="noopener" aria-label="Instagram de Mundo Alitas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/></svg></a>
+  <a class="float-btn float-wa" data-wa="Hola Mundo Alitas 👋 Quiero hacer un pedido." href="https://wa.me/573147172603?text=Hola%20Mundo%20Alitas%20%F0%9F%91%8B%20Quiero%20hacer%20un%20pedido." target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+</body></html>
