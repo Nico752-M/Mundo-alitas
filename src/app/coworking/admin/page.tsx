@@ -18,7 +18,8 @@ import {
   CalendarDays,
   DoorOpen,
   ArrowRight,
-  Clock3
+  Clock3,
+  Handshake
 } from "lucide-react";
 
 type Code = {
@@ -533,6 +534,17 @@ export default function CoworkingAdminPage() {
                 <strong>Personas inscritas</strong>
                 <span>
                   Consulta visitantes y reservas organizados por sala.
+                </span>
+                <ArrowRight size={18} />
+              </button>
+
+              <button onClick={() => { window.location.href = "/aliados"; }}>
+                <span className="admin-nav-icon">
+                  <Handshake size={25} />
+                </span>
+                <strong>Aliados</strong>
+                <span>
+                  Crea aliados con su QR y lleva el conteo de compras y beneficios.
                 </span>
                 <ArrowRight size={18} />
               </button>
