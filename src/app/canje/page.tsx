@@ -6,7 +6,18 @@ import { Html5Qrcode } from "html5-qrcode";
 import { ArrowLeft, Camera, CheckCircle2, LogOut, ScanLine, ShieldCheck, XCircle } from "lucide-react";
 import { giftLabel } from "@/lib/gifts";
 
-type Redemption = { status: "redeemed" | "already_redeemed" | "not_found"; participant?: { full_name: string; whatsapp: string; instagram: string; gift: string; redeemed_at: string | null; created_at: string } };
+type PrizeResult = {
+  type: "prize";
+  status: "redeemed" | "already_redeemed" | "not_found";
+  participant?: { full_name: string; whatsapp: string; instagram: string; gift: string; redeemed_at: string | null; created_at: string };
+};
+type CouponResult = {
+  type: "ally_coupon";
+  status: "redeemed" | "already_redeemed";
+  coupon: { nombre_cliente: string; whatsapp: string; estado: string; usado_en: string | null; creado_en: string; aliado_nombre: string };
+};
+type UnknownResult = { type: "unknown"; status: "not_found" };
+type Redemption = PrizeResult | CouponResult | UnknownResult;
 
 export default function CanjePage() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -55,7 +66,7 @@ export default function CanjePage() {
     if (processingRef.current) return;
     processingRef.current = true;
     await stopScanner();
-    setBusy(true); setMessage(null);
+    setBusy(true); setMessage(null); setLoginError("");
     try {
       const response = await fetch("/api/canje", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ qr_token: decodedText.trim() }) });
       const data = await response.json();
@@ -63,7 +74,7 @@ export default function CanjePage() {
       if (!response.ok) throw new Error(data.error || "No fue posible verificar el código.");
       setMessage(data as Redemption);
     } catch (err) {
-      setMessage({ status: "not_found" });
+      setMessage({ type: "unknown", status: "not_found" });
       setLoginError(err instanceof Error ? err.message : "No fue posible verificar el código.");
     } finally { setBusy(false); processingRef.current = false; }
   }
@@ -89,28 +100,48 @@ export default function CanjePage() {
       <section className="login-card">
         <div className="operator-symbol"><ShieldCheck size={25} /></div>
         <p className="eyebrow">ZONA DE OPERADORES</p><h1>ACCESO<br /><em>PRIVADO.</em></h1>
-        <p className="muted">Ingresa la contraseña del evento para validar y entregar premios.</p>
+        <p className="muted">Ingresa la contraseña para validar premios y cupones de aliados.</p>
         <form onSubmit={login} className="login-form"><label>Contraseña de operador<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" required autoComplete="current-password" /></label>{loginError && <p className="error-message">{loginError}</p>}<button className="button button-gold submit-button" disabled={busy}>{busy ? "Verificando..." : "Entrar al panel"}</button></form>
       </section>
     </main>
   );
 
+  const isCoupon = message?.type === "ally_coupon";
+  const success = message?.status === "redeemed";
+
   return (
     <main className="operator-page">
       <header className="simple-header"><Link href="/" className="wordmark">MUNDO <span>ALITAS</span></Link><button className="text-button" onClick={logout}><LogOut size={15} /> Cerrar sesión</button></header>
       <section className="operator-layout">
-        <div><p className="eyebrow">PANEL DE CONTROL</p><h1>VALIDAR<br /><em>PREMIOS.</em></h1><p className="muted">Escanea el código QR del participante para consultar su regalo y registrar la entrega.</p></div>
+        <div><p className="eyebrow">PANEL DE CONTROL</p><h1>VALIDAR<br /><em>PREMIOS.</em></h1><p className="muted">Un solo lector para premios y cupones de aliados. El sistema identifica automáticamente el tipo de código.</p></div>
         <div className="scanner-card">
           <div className="scanner-card-head"><span><ScanLine size={17} /> LECTOR QR</span><span className="live-dot">● {scannerActive ? "CÁMARA ACTIVA" : "EN ESPERA"}</span></div>
           <div id="mundo-alitas-reader" className="scanner-viewport"><div className="scanner-placeholder"><Camera size={30} /><span>La cámara aparecerá aquí</span></div></div>
           {!scannerActive ? <button className="button button-gold submit-button" onClick={startScanner} disabled={busy}><Camera size={17} /> Activar cámara</button> : <button className="button button-outline submit-button" onClick={stopScanner}>Detener cámara</button>}
           {loginError && <p className="error-message">{loginError}</p>}
-          {message && <div className={`redemption-result ${message.status}`}>
-            {message.status === "redeemed" ? <CheckCircle2 size={24} /> : <XCircle size={24} />}
-            <strong>{message.status === "redeemed" ? "PREMIO CANJEADO" : message.status === "already_redeemed" ? "ESTE PREMIO YA FUE ENTREGADO" : "CÓDIGO NO VÁLIDO"}</strong>
-            {message.participant && <><span className="result-name">{message.participant.full_name}</span><span className="result-gift">{giftLabel(message.participant.gift)}</span><small>{message.status === "redeemed" ? "Entrega confirmada correctamente." : `Canje registrado: ${message.participant.redeemed_at ? new Date(message.participant.redeemed_at).toLocaleString("es-CO") : "anteriormente"}`}</small></>}
-            <button className="text-button" onClick={() => { setMessage(null); setLoginError(""); }}>Escanear otro código</button>
-          </div>}
+
+          {message && (
+            <div className={`redemption-result ${success ? "redeemed" : "not-found"}`}>
+              {success ? <CheckCircle2 size={26} /> : <XCircle size={26} />}
+              {message.type === "prize" ? (
+                <>
+                  <strong>{message.status === "redeemed" ? "PREMIO CANJEADO" : message.status === "already_redeemed" ? "ESTE PREMIO YA FUE ENTREGADO" : "CÓDIGO NO VÁLIDO"}</strong>
+                  {message.participant && <><span className="result-name">{message.participant.full_name}</span><span className="result-gift">{giftLabel(message.participant.gift)}</span><small>{message.status === "redeemed" ? "Entrega confirmada correctamente." : `Canje registrado: ${message.participant.redeemed_at ? new Date(message.participant.redeemed_at).toLocaleString("es-CO") : "anteriormente"}`}</small></>}
+                </>
+              ) : message.type === "ally_coupon" ? (
+                <>
+                  <strong>{message.status === "redeemed" ? "CUPÓN VÁLIDO" : "CUPÓN INVÁLIDO / YA UTILIZADO"}</strong>
+                  <span className="result-name">{message.coupon.nombre_cliente}</span>
+                  <span className="result-gift">Referido por: {message.coupon.aliado_nombre}</span>
+                  <small>{message.status === "redeemed" ? "Cupón marcado como USADO. Puede entregar cualquier producto del menú." : `Este cupón ya fue utilizado${message.coupon.usado_en ? ` el ${new Date(message.coupon.usado_en).toLocaleString("es-CO")}` : ""}.`}</small>
+                  <small>WhatsApp: {message.coupon.whatsapp}</small>
+                </>
+              ) : (
+                <strong>CUPÓN / CÓDIGO INVÁLIDO</strong>
+              )}
+              <button className="text-button" onClick={() => { setMessage(null); setLoginError(""); }}>Escanear otro código</button>
+            </div>
+          )}
         </div>
       </section>
     </main>
