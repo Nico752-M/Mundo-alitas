@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, ChevronDown, Plus, Search } from "lucide-react";
 
 type Aliado = {
   id: string;
@@ -32,6 +32,19 @@ export default function AliadosPage() {
   const [form, setForm] = useState({ nombre: "", tipo: "barberia", meta: "10" });
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"todos" | "pendientes" | "inactivos">("todos");
+  const [open, setOpen] = useState<string | null>(null);
+
+  const visibles = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return aliados.filter((a) => {
+      if (filter === "pendientes" && a.pendientes < 1) return false;
+      if (filter === "inactivos" && a.active) return false;
+      if (!q) return true;
+      return a.nombre.toLowerCase().includes(q) || a.codigo.toLowerCase().includes(q);
+    });
+  }, [aliados, search, filter]);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/aliados", { cache: "no-store" });
@@ -183,45 +196,109 @@ export default function AliadosPage() {
           </button>
         </form>
 
-        {aliados.length === 0 && <p className="muted">Todavía no hay aliados.</p>}
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+          <div style={{ position: "relative", flex: "1 1 240px" }}>
+            <Search size={16} style={{ position: "absolute", left: 13, top: 16, color: "var(--muted)" }} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nombre o código"
+              style={{ width: "100%", height: 48, padding: "0 14px 0 38px", borderRadius: 6, border: "1px solid rgba(255,255,255,.13)", background: "#0c0d0b", color: "var(--white)", fontSize: 16 }}
+            />
+          </div>
+          {([
+            { value: "todos", label: "Todos" },
+            { value: "pendientes", label: "Por entregar" },
+            { value: "inactivos", label: "Inactivos" }
+          ] as const).map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              onClick={() => setFilter(f.value)}
+              style={{
+                height: 48,
+                padding: "0 16px",
+                borderRadius: 6,
+                fontSize: 12,
+                border: "1px solid var(--gold)",
+                background: filter === f.value ? "var(--gold)" : "transparent",
+                color: filter === f.value ? "#17150f" : "var(--gold)"
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
 
-        {aliados.map((a) => (
-          <article key={a.id} className="scanner-card" style={{ opacity: a.active ? 1 : 0.55 }}>
-            <div className="scanner-card-head">
-              <span>{a.nombre.toUpperCase()}</span>
-              <span>{a.codigo}</span>
-            </div>
-            <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-              <div style={{ background: "#fff", padding: 10, borderRadius: 6 }}>
-                <QRCodeSVG value={`${base}/a/${a.codigo}`} size={128} level="M" />
-              </div>
-              <div style={{ lineHeight: 1.9, fontSize: 14 }}>
-                <div><strong>{a.compras}</strong> compras · meta {a.meta}</div>
-                <div>Beneficios entregados: {a.beneficios_entregados}</div>
-                <div style={{ color: a.pendientes > 0 ? "var(--gold-light)" : undefined }}>
-                  Beneficios por entregar: <strong>{a.pendientes}</strong>
-                </div>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
-              <button className="button button-gold" disabled={busy || !a.active} onClick={() => void call("/api/aliados/compra", "POST", { id: a.id })}>
-                +1 compra
-              </button>
+        <p className="muted" style={{ margin: 0 }}>
+          {visibles.length} de {aliados.length} aliados
+        </p>
+
+        {aliados.length === 0 && <p className="muted">Todavía no hay aliados.</p>}
+        {aliados.length > 0 && visibles.length === 0 && (
+          <p className="muted">Ningún aliado coincide con la búsqueda.</p>
+        )}
+
+        {visibles.map((a) => {
+          const abierto = open === a.id;
+          return (
+            <article key={a.id} className="scanner-card" style={{ margin: 0, padding: 0, opacity: a.active ? 1 : 0.6 }}>
               <button
-                className="button"
-                style={{ border: "1px solid var(--gold)", color: "var(--gold)", background: "transparent" }}
-                disabled={busy || a.pendientes < 1}
-                onClick={() => void call("/api/aliados", "PATCH", { id: a.id, action: "entregar" })}
+                type="button"
+                onClick={() => setOpen(abierto ? null : a.id)}
+                style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", background: "transparent", border: 0, color: "inherit", textAlign: "left" }}
               >
-                Entregar beneficio
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <strong style={{ display: "block", fontSize: 15, overflowWrap: "anywhere" }}>{a.nombre}</strong>
+                  <small style={{ color: "var(--muted)" }}>
+                    {a.codigo} · {a.compras} compras · meta {a.meta}
+                  </small>
+                </div>
+                {a.pendientes > 0 && (
+                  <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(214,178,79,.15)", color: "var(--gold-light)", fontSize: 11, whiteSpace: "nowrap" }}>
+                    {a.pendientes} por entregar
+                  </span>
+                )}
+                {!a.active && <span style={{ fontSize: 11, color: "var(--muted)" }}>Inactivo</span>}
+                <ChevronDown size={18} style={{ flexShrink: 0, transform: abierto ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
               </button>
-              <button className="text-button" disabled={busy} onClick={() => void call("/api/aliados", "PATCH", { id: a.id, action: a.active ? "desactivar" : "activar" })}>
-                {a.active ? "Desactivar" : "Activar"}
-              </button>
-            </div>
-            <p className="privacy-note" style={{ textAlign: "left" }}>{base}/a/{a.codigo}</p>
-          </article>
-        ))}
+
+              {abierto && (
+                <div style={{ padding: "16px 18px 18px", borderTop: "1px solid var(--line)" }}>
+                  <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
+                    <div style={{ background: "#fff", padding: 10, borderRadius: 6 }}>
+                      <QRCodeSVG value={`${base}/qr/${a.codigo}`} size={128} level="M" />
+                    </div>
+                    <div style={{ lineHeight: 1.9, fontSize: 14 }}>
+                      <div><strong>{a.compras}</strong> compras · meta {a.meta}</div>
+                      <div>Beneficios entregados: {a.beneficios_entregados}</div>
+                      <div style={{ color: a.pendientes > 0 ? "var(--gold-light)" : undefined }}>
+                        Beneficios por entregar: <strong>{a.pendientes}</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
+                    <button className="button button-gold" disabled={busy || !a.active} onClick={() => void call("/api/aliados/compra", "POST", { id: a.id })}>
+                      +1 compra
+                    </button>
+                    <button
+                      className="button"
+                      style={{ border: "1px solid var(--gold)", color: "var(--gold)", background: "transparent" }}
+                      disabled={busy || a.pendientes < 1}
+                      onClick={() => void call("/api/aliados", "PATCH", { id: a.id, action: "entregar" })}
+                    >
+                      Entregar beneficio
+                    </button>
+                    <button className="text-button" disabled={busy} onClick={() => void call("/api/aliados", "PATCH", { id: a.id, action: a.active ? "desactivar" : "activar" })}>
+                      {a.active ? "Desactivar" : "Activar"}
+                    </button>
+                  </div>
+                  <p className="privacy-note" style={{ textAlign: "left" }}>{base}/qr/{a.codigo}</p>
+                </div>
+              )}
+            </article>
+          );
+        })}
       </section>
     </main>
   );
