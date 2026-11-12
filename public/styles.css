@@ -1692,3 +1692,30 @@ html {
 #premios .lugar-home-head p{font:400 15px/1.6 var(--sans);color:var(--muted-light);margin:14px 0 0;max-width:36em}
 .lugar-copy p + p{margin-top:8px}
 .lugar-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ===== PREMIOS — tarjetas con foto ===== */
+.premios-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:clamp(20px,3vw,36px)}
+.premio-card{position:relative;isolation:isolate;overflow:hidden;min-height:390px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;gap:30px;border-radius:12px;color:#fff4dc;transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.premio-card:hover{transform:translateY(-8px)}
+.premio-card::before{content:"";position:absolute;inset:0;z-index:-1;background-repeat:no-repeat;background-size:100% 100%,cover;background-position:center,center;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.premio-card:hover::before{transform:scale(1.06)}
+
+.premio-alita::before{background-image:linear-gradient(to top,rgba(48,32,14,.97) 6%,rgba(48,32,14,.78) 42%,rgba(48,32,14,.25) 100%),url("/images/alita.png")}
+.premio-papas{color:#080806;border-radius:34px}
+.premio-papas::before{background-image:linear-gradient(to top,rgba(233,185,47,.98) 6%,rgba(233,185,47,.8) 42%,rgba(233,185,47,.3) 100%),url("/images/Papas.jpg")}
+.premio-bebida::before{background-image:linear-gradient(to top,rgba(74,53,23,.97) 6%,rgba(74,53,23,.78) 42%,rgba(74,53,23,.25) 100%),url("/images/cerezada.png")}
+
+.premio-num{font:400 clamp(78px,8vw,120px)/.8 "Anton",Impact,sans-serif;color:#e9b92f}
+.premio-papas .premio-num{color:#080806}
+.premio-card h3{margin:0 0 12px;font:400 clamp(36px,4vw,58px)/.9 "Anton",Impact,sans-serif;text-transform:uppercase}
+.premio-card p{margin:0;max-width:300px;font-size:15px;line-height:1.5;color:inherit;opacity:.85}
+.premio-stamp{display:inline-block;margin-top:22px;padding:7px 13px;border:1px solid currentColor;border-radius:12px;font:900 10px var(--sans);letter-spacing:.12em;text-transform:uppercase}
+
+@media(max-width:850px){
+  .premios-cards{grid-template-columns:1fr}
+  .premio-card{min-height:300px}
+}
+@media(prefers-reduced-motion:reduce){
+  .premio-card,.premio-card::before{transition:none}
+  .premio-card:hover,.premio-card:hover::before{transform:none}
+}
